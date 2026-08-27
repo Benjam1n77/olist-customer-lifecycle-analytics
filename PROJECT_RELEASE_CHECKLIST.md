@@ -11,12 +11,14 @@
 - [x] 客户级产物与旧工具隔离
 - [x] 本地产物目录命名与真实样例说明完成
 - [x] GitHub 本地发布准备完成
-- [ ] GitHub 仓库发布完成
-- [ ] GitHub Actions 远程验证通过
+- [x] GitHub 仓库发布完成
+- [x] GitHub Actions 远程验证通过
 
 已确认的发布选择：仓库为 `Benjam1n77/olist-customer-lifecycle-analytics`，使用 **public**，用于面试展示；自行编写的项目代码采用 MIT，Olist 数据及其改编结果保留原 CC BY-NC-SA 4.0 许可。完整个人简历不发布。
 
-目标远程地址：`https://github.com/Benjam1n77/olist-customer-lifecycle-analytics.git`。
+公开仓库：[Benjam1n77/olist-customer-lifecycle-analytics](https://github.com/Benjam1n77/olist-customer-lifecycle-analytics)。
+
+`origin` 读取地址为 `https://github.com/Benjam1n77/olist-customer-lifecycle-analytics.git`；推送使用同一仓库的 `git@github.com:Benjam1n77/olist-customer-lifecycle-analytics.git`，已验证现有 SSH 授权属于 `Benjam1n77`，未新增凭据。
 
 ## 检查结果
 
@@ -74,7 +76,7 @@ data/raw/*
 - 仅读取 9 份可发布汇总 CSV，覆盖客户分层、Cohort、90 天跨日二购和履约体验；不读取本地客户名单、不连接数据库、不重新拟合模型。
 - 加权 M1 留存率 0.48%（390 / 81,265），与既有交叉验证记录一致；输入文件哈希运行前后不变。
 - 4 张图表已逐张检查，文字和坐标轴未裁切。审阅副本保存在本地 `notebook_runs/`，不发布。
-- 已为 GitHub Actions 增加 Notebook 执行步骤；远程运行结果须推送后确认。
+- 已为 GitHub Actions 增加 Notebook 执行步骤；实际远程运行结果见下方发布验证记录。
 
 ### Dashboard 与截图
 
@@ -103,7 +105,7 @@ data/raw/*
 ### Git 与自动化测试
 
 - 已初始化本地 Git 仓库，默认分支为 `main`。
-- 已创建首次提交 `d15e50c`（`Initial release: Olist customer lifecycle analytics`），包含 100 个经过核验的发布文件；已配置上述目标地址为 `origin`，尚未推送。
+- 已创建首次提交 `d15e50c`（`Initial release: Olist customer lifecycle analytics`），包含 100 个经过核验的发布文件；该提交及发布状态更新 `41066ed` 均已推送到公开仓库的 `main`。
 - 已检查 Git 暂存/跟踪文件中不存在匹配忽略规则的文件；完整个人简历、原始数据与本地产物均未进入首次提交。
 - 已添加 `.github/workflows/tests.yml`，在 push、pull request 和手动触发时运行流水线注册检查与 pytest。
 - 当前 67 个自动化测试在本地全部通过；包含加权 M1、原有 90 天二购边界、客户级导出路由、Tableau 中间/最终表分离、Git 忽略规则、Notebook 公开输入检查及真实样例校验。
@@ -130,8 +132,12 @@ data/raw/*
 - 已添加标准 MIT `LICENSE`，版权署名使用已确认的 GitHub 账号 `Benjam1n77`。
 - README 与数据说明明确区分项目代码和 Olist 数据许可；MIT 不覆盖数据集、派生汇总、真实样例及数据展示输出。
 
-## 待完成的发布步骤
+## 远程发布验证（2026-08-27）
 
-1. 创建已确认的 public GitHub 仓库；当前插件已确认账号，但未提供建库接口，可用浏览器需要用户登录 GitHub。目标仓库 API 当前返回 404，尚未确认远程仓库已存在。
-2. 向已配置的 `origin` 推送 `main`。
-3. 检查 GitHub 页面、公开文件边界和 Actions 的真实运行结果。
+- GitHub API 已确认仓库所属账号为 `Benjam1n77`、可见性为 `public`，默认分支为 `main`。
+- 已逐一对比远程与本地 100 个发布文件的 Git blob SHA 和文件模式，全部一致；完整简历、原始数据、`outputs/local/` 和 `tools/legacy/` 均不在远程文件树中。
+- README 在线页面已显示 MIT 许可和三页最终 Tableau 截图；三张图片均实际加载为 `1366 × 768`。
+- Notebook 在线预览已成功渲染，并显示加权 M1 留存率 0.48%；README 中的 Tableau 目录链接可正确跳转，最终 TWBX 与三张 PNG 均可访问。
+- 首次 [GitHub Actions 运行](https://github.com/Benjam1n77/olist-customer-lifecycle-analytics/actions/runs/33069294132)（提交 `41066ed`）已完成，结论为 `success`：流水线注册检查、pytest 与 Notebook 从头执行全部通过。
+- 远程 pytest 实际结果为 **66 passed, 1 skipped**；跳过项是依赖本地完整客户名单的样例来源复核，符合不上传完整名单的发布边界。公开样例、指标和发布规则测试均正常运行。本地有完整源名单时，67 项全部通过。
+- 后续提交的实时状态见 [GitHub Actions](https://github.com/Benjam1n77/olist-customer-lifecycle-analytics/actions)；上述固定运行链接保留本次发布验证证据。
