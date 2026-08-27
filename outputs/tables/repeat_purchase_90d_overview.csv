@@ -1,0 +1,11 @@
+metric,value,unit,definition,source
+analysis_date,2018-08-30,date,最大有效购买日期 + 1 天,mart_order_summary / Python statsmodels GLM
+mature_first_purchase_cutoff,2018-06-01,date,首购日期不晚于该日，保证 90 天观察窗口,mart_order_summary / Python statsmodels GLM
+eligible_customers,75563,customers,拥有完整 90 天观察窗口的首购客户,mart_order_summary / Python statsmodels GLM
+repeat_customers_90d,980,customers,首购后第 1–90 个自然日出现下一笔 delivered 订单的客户,mart_order_summary / Python statsmodels GLM
+repeat_rate_90d_pct,1.2969,percent,跨自然日 repeat_customers_90d / eligible_customers,mart_order_summary / Python statsmodels GLM
+median_days_to_second_purchase,29.0,days,第 1–90 天完成二购客户的首购至二购实际间隔中位数,mart_order_summary / Python statsmodels GLM
+purchase_time_n_obs,75563,customers,逻辑回归样本量,mart_order_summary / Python statsmodels GLM
+purchase_time_aic,10448.88,aic,模型 AIC，仅用于同一样本模型间相对比较,mart_order_summary / Python statsmodels GLM
+first_order_experience_n_obs,74820,customers,逻辑回归样本量,mart_order_summary / Python statsmodels GLM
+first_order_experience_aic,10273.51,aic,模型 AIC，仅用于同一样本模型间相对比较,mart_order_summary / Python statsmodels GLM

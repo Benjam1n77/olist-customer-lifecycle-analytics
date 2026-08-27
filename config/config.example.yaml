@@ -1,0 +1,41 @@
+# =============================================================
+# Olist 项目配置示例
+# 使用方式：
+#   1. 复制本文件为 config/config.yaml
+#   2. 填入真实数据库账号密码（config.yaml 已被 .gitignore 忽略）
+#   3. 也可通过环境变量覆盖（优先级：环境变量 > config.yaml）
+#      例如：OLIST_DB_HOST / OLIST_DB_PORT / OLIST_DB_USER /
+#            OLIST_DB_PASSWORD / OLIST_DB_NAME
+# =============================================================
+
+database:
+  host: localhost
+  port: 3306
+  user: your_mysql_user
+  password: your_mysql_password   # 切勿提交真实密码到 Git
+  database: olist_ecommerce
+  charset: utf8mb4
+
+paths:
+  raw_data_dir: data/raw
+  interim_data_dir: data/interim
+  processed_data_dir: data/processed
+  sql_dir: sql
+  output_tables_dir: outputs/tables
+  output_figures_dir: outputs/figures
+  output_tableau_dir: outputs/tableau
+  # 完整派生名单和本地中间产物；为精简仓库，整个目录不纳入 Git
+  output_local_dir: outputs/local
+
+analysis:
+  # 有效订单口径：核心用户价值与复购分析仅统计已交付订单
+  valid_order_status: delivered
+  # 低评分阈值：review_score <= low_score_threshold 记为低评分
+  low_score_threshold: 2
+  # analysis_date 不手工指定，默认由数据推导：
+  # analysis_date = 数据集中最大有效购买日期 + 1 天
+  analysis_date: null
+
+logging:
+  level: INFO
+  log_file: logs/pipeline.log

@@ -1,0 +1,12 @@
+metric,sql_value,python_value,abs_diff,tolerance,status
+total_customers,96096,96096.0,0.0,0.0,PASS
+valid_orders,96478,96478.0,0.0,0.0,PASS
+one_time_buyer_pct,97.00,97.0,0.0,0.01,PASS
+repeat_rate_pct,3.00,3.0,0.0,0.01,PASS
+total_payment,15422461.77,15422461.77,0.0,0.05,PASS
+average_order_value,159.86,159.86,0.0,0.01,PASS
+delay_rate_pct,7.98,7.98,0.0,0.01,PASS
+on_time_avg_score,4.30,4.3,0.0,0.01,PASS
+delayed_avg_score,2.57,2.57,0.0,0.01,PASS
+high_value_churned,10915,10915.0,0.0,0.0,PASS
+m1_retention_pct,0.48,0.48,0.0,0.01,PASS

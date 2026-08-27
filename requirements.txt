@@ -1,0 +1,28 @@
+# Olist 电商客户生命周期与精细化运营分析 - Python 依赖
+# 建议 Python 3.11+
+
+# 数据处理与分析
+pandas>=2.1.0
+numpy>=1.26.0
+
+# 可视化
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# 数据库连接
+SQLAlchemy>=2.0.0
+PyMySQL>=1.1.0
+cryptography>=42.0.0
+
+# 配置与工具
+PyYAML>=6.0.1
+python-dotenv>=1.0.0
+
+# Notebook
+jupyter>=1.0.0
+ipykernel>=6.29.0
+
+# 测试与统计检验
+pytest>=8.0.0
+scipy>=1.11.0
+statsmodels>=0.14.0

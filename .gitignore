@@ -1,0 +1,105 @@
+# ---- 数据文件（原始数据不得提交） ----
+data/raw/*
+data/interim/*
+data/processed/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+*.csv
+*.zip
+*.parquet
+*.sqlite
+*.db
+
+# ---- 敏感配置 ----
+.env
+.env.*
+config/config.yaml
+config/config.local.yaml
+*.pem
+*.key
+kaggle.json
+credentials.json
+
+# ---- 完整个人简历（含联系方式，仅保留在本地） ----
+/docs/resume/resume_full.tex
+
+# ---- 本地生成的报告副本（以 Markdown 源文件为发布版本） ----
+docs/project_report.html
+docs/project_report.pdf
+
+# ---- 本地生成产物与旧工具（任何文件类型均不发布） ----
+/outputs/local/
+/tools/legacy/
+
+# ---- 分析输出（按需提交，默认忽略大体积产物） ----
+outputs/tables/*
+outputs/figures/*
+outputs/tableau/*
+!outputs/tables/.gitkeep
+!outputs/figures/.gitkeep
+!outputs/tableau/.gitkeep
+!outputs/tables/cohort_retention_long.csv
+!outputs/tables/cohort_retention_matrix.csv
+!outputs/tables/cross_validation_results.csv
+!outputs/tables/data_quality_summary.csv
+!outputs/tables/delivery_experience_summary.csv
+!outputs/tables/repeat_purchase_90d_overview.csv
+!outputs/tables/repeat_purchase_90d_driver_summary.csv
+!outputs/tables/repeat_purchase_90d_segment_rates.csv
+!outputs/tables/repeat_purchase_90d_analysis.xlsx
+!outputs/figures/01_order_status_distribution.png
+!outputs/figures/02_monthly_orders_revenue.png
+!outputs/figures/03_one_time_vs_repeat_buyers.png
+!outputs/figures/04_customer_value_distribution.png
+!outputs/figures/05_customer_segment_distribution.png
+!outputs/figures/06_cohort_retention_heatmap.png
+!outputs/figures/07_m1_retention_trend.png
+!outputs/figures/08_on_time_vs_delayed_review_score.png
+!outputs/figures/09_delay_bucket_review_score.png
+!outputs/figures/10_state_delay_rate.png
+!outputs/figures/11_category_delay_rate.png
+!outputs/figures/12_high_value_churn_profile.png
+!outputs/figures/13_repeat_purchase_90d_drivers.png
+!outputs/tableau/customer_overview.csv
+!outputs/tableau/customer_segment_dashboard.csv
+!outputs/tableau/cohort_dashboard.csv
+!outputs/tableau/delivery_dashboard.csv
+!outputs/tableau/campaign_dashboard.csv
+!outputs/tableau/category_performance.csv
+!outputs/tableau/dashboard_overview.png
+!outputs/tableau/customer_segment.png
+!outputs/tableau/delivery_analysis.png
+!outputs/tableau/Olist_Customer_Lifecycle_Dashboard.twbx
+
+# ---- Tableau 本地工作文件与旧设计预览 ----
+*.twbr
+outputs/tableau/*.twb
+outputs/tableau/*_tableau_tmp.png
+outputs/tableau/*_design_preview.png
+docs/images/dashboard_preview.png
+docs/images/dashboard_design_preview.png
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---- 日志 ----
+logs/*
+!logs/.gitkeep
+
+# ---- Jupyter / IDE / 系统 ----
+.DS_Store
+.idea/
+.vscode/
+*.log
