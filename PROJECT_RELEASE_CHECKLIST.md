@@ -103,6 +103,8 @@ data/raw/*
 ### Git 与自动化测试
 
 - 已初始化本地 Git 仓库，默认分支为 `main`。
+- 已创建首次提交 `d15e50c`（`Initial release: Olist customer lifecycle analytics`），包含 100 个经过核验的发布文件；已配置上述目标地址为 `origin`，尚未推送。
+- 已检查 Git 暂存/跟踪文件中不存在匹配忽略规则的文件；完整个人简历、原始数据与本地产物均未进入首次提交。
 - 已添加 `.github/workflows/tests.yml`，在 push、pull request 和手动触发时运行流水线注册检查与 pytest。
 - 当前 67 个自动化测试在本地全部通过；包含加权 M1、原有 90 天二购边界、客户级导出路由、Tableau 中间/最终表分离、Git 忽略规则、Notebook 公开输入检查及真实样例校验。
 
@@ -130,6 +132,6 @@ data/raw/*
 
 ## 待完成的发布步骤
 
-1. 创建已确认的 public GitHub 仓库；当前插件已确认账号，但未提供建库接口，可用浏览器需要用户登录 GitHub。本地首次提交仅纳入经过检查的发布文件。
-2. 配置目标远程地址并推送 `main`。
+1. 创建已确认的 public GitHub 仓库；当前插件已确认账号，但未提供建库接口，可用浏览器需要用户登录 GitHub。目标仓库 API 当前返回 404，尚未确认远程仓库已存在。
+2. 向已配置的 `origin` 推送 `main`。
 3. 检查 GitHub 页面、公开文件边界和 Actions 的真实运行结果。
