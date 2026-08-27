@@ -1,11 +1,11 @@
 # Olist Tableau Dashboard 搭建指南
 
-## 当前交付状态
+## 工作簿与截图
 
-- 已完成并保存最终打包工作簿：`outputs/tableau/Olist_Customer_Lifecycle_Dashboard.twbx`。
-- 已完成三页 Tableau 原生导出截图：`dashboard_overview.png`、`customer_segment.png`、`delivery_analysis.png`。
+- 打包工作簿：`outputs/tableau/Olist_Customer_Lifecycle_Dashboard.twbx`。
+- 三页 Tableau 原生导出截图：`dashboard_overview.png`、`customer_segment.png`、`delivery_analysis.png`。
 - 三页 Dashboard 均为固定尺寸 `1366 × 768`，截图与最终工作簿的指标口径一致。
-- 用户分层页脚注已更新为加权 M1 口径，最终截图中没有悬浮提示框。
+- 用户分层页脚注说明加权 M1 口径；截图不含悬浮提示框。
 
 ## 1. Tableau 数据源
 
@@ -21,9 +21,7 @@
 
 这些文件已经是 Dashboard 粒度，不需要在 Tableau 中再次连接原始明细表，也不需要建立跨数据源 JOIN。
 
-发布与本地路径分工：最终 Dashboard CSV、TWBX 和原生截图保留在 `outputs/tableau/`；`customer_overview_metrics.csv`、`customer_segments.csv` 等中间汇总由导出脚本写入 `outputs/local/tableau_staging/`，不发布。上表中的履约体验与 90 天二购汇总仍位于 `outputs/tables/`。完整目录规则见 [输出目录说明](../outputs/README.md)。
-
-旧布局原型脚本已移至本地 `tools/legacy/build_tableau_previews.py`，脚本及其 `outputs/local/legacy_previews/` 产物均不上传 GitHub，也不覆盖最终 Tableau 截图。
+Dashboard CSV、TWBX 和原生截图位于 `outputs/tableau/`；上表中的履约体验与 90 天二购汇总位于 `outputs/tables/`。导出过程中的中间汇总写入 `outputs/local/tableau_staging/`，具体生成方式见 [输出说明](../outputs/README.md)。
 
 ## 2. 视觉规范
 
@@ -181,4 +179,4 @@ Tableau 官方流程是在创建工作表后点击 `New Dashboard`，再将工�
 - `outputs/tableau/customer_segment.png`
 - `outputs/tableau/delivery_analysis.png`
 
-当前三张同名 PNG 已是最终 Tableau 原生导出文件；再次导出时应保持 `1366 × 768`，并确认截图中没有悬浮提示框。
+导出图片应保持 `1366 × 768`，并确认没有悬浮提示框，指标与工作簿一致。

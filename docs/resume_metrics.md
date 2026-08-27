@@ -1,6 +1,6 @@
-# Resume Metrics
+# 项目指标与来源
 
-> 原有 11 项核心宽表指标经过 SQL 与 Python 双重校验（见 `outputs/tables/cross_validation_results.csv`，全部 PASS，差异为 0）；新增 90 天二购指标来自实际数据库查询与 `src/analyze_repeat_purchase.py` 运行结果，并通过单元测试验证窗口边界。
+> 11 项核心宽表指标经过 SQL 与 Python 双重校验（见 [交叉验证结果](../outputs/tables/cross_validation_results.csv)，全部 PASS，差异为 0）；90 天二购指标来自实际数据库查询与 `src/analyze_repeat_purchase.py` 运行结果，并通过单元测试验证窗口边界。
 > 观察日 analysis_date = 2018-08-30（最大有效购买日期 + 1 天）。
 
 - 数据表数量：9 张原始表 + 10 张建模/分析表（3 张聚合表、3 张宽表、分层表、Cohort 表、履约样本表、营销名单表）
@@ -11,7 +11,7 @@
 - 复购用户占比：3.00%（2,801 人）
 - 加权 M1 留存率：0.48%（21 个成熟 Cohort；ΣM1 留存客户数 390 / ΣCohort Size 81,265）；M2、M3 的成熟 Cohort 简单平均分别为 0.29%、0.21%
 - 首购后 90 天跨日二购率：1.2969%（75,563 名成熟首购客户中 980 人；二购间隔中位数 29.00 天）
-- 高价值流失用户数量：10,915（Brief 11.3 口径；其中 589 人同时命中履约受损）
+- 高价值流失用户数量：10,915（高价值且已流失的完整人群；其中 589 人同时命中履约受损）
 - 高价值流失用户历史支付金额占比：30.89%（总支付 15,422,461.77 BRL）
 - 延迟订单平均评分：2.57
 - 准时订单平均评分：4.30
@@ -19,7 +19,7 @@
 - 营销目标名单数量：71,424
 - Tableau 页面数量：3（客户价值总览 / 留存与生命周期 / 履约体验，数据见 `outputs/tableau/`）
 
-## 补充亮点指标（面试可用）
+## 补充分析指标
 
 - 配送延迟率：7.98%（95,364 笔可判定订单中 7,613 笔延迟）；
 - 延迟订单低评分率 53.99%，准时订单仅 9.15%；
@@ -28,7 +28,7 @@
 - 质量检查 36 项全覆盖：主键/空值/枚举/时间逻辑/数值/关联完整性/多重记录；
 - 数据勾稽：订单宽表金额、用户宽表订单数、支付总额（15,422,461.77 BRL）聚合前后精确一致。
 
-## 可直接替换简历的 LaTeX 文本
+## 项目摘要示例（LaTeX）
 
 ```latex
 \projectfield{核心发现}{
@@ -45,7 +45,7 @@
 | 0.29% / 0.21% | cohort_retention_long（M2/M3 成熟 Cohort 简单平均） |
 | 75,563 / 980 / 1.2969% / 29.00 天 | outputs/tables/repeat_purchase_90d_overview.csv |
 | OR=1.4099 / OR=0.7371 | outputs/tables/repeat_purchase_90d_driver_summary.csv |
-| 10,915 / 30.89% | outputs/local/high_value_churned_customers.csv（完整本地名单，不发布） |
+| 10,915 / 30.89% | outputs/local/high_value_churned_customers.csv（由流程生成的完整名单） |
 | 4.30 / 2.57 / 40.24% | mart_delivery_sample 核心对比（SQL 与 Python 一致） |
 | OR=11.35 | outputs/tables/delivery_experience_summary.csv |
 | 71,424 | mart_campaign_target_list |

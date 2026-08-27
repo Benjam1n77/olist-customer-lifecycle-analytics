@@ -12,9 +12,9 @@
 
 ## 匿名化与数据许可
 
-[Olist 官方数据页](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) 说明这是已经匿名化的公开商业数据，标注许可为 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)。客户级只是记录粒度，不等于敏感数据；公开也不等于没有使用条件。
+[Olist 官方数据页](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) 说明这是已经匿名化的公开商业数据，标注许可为 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)。
 
-本项目公开的 [真实客户样例](../docs/customer_samples.md) 来自该数据集，经项目 SQL 汇总与标签规则派生，再确定性选取。数据及其改编内容遵循原数据许可要求（署名、非商业、相同方式共享）。项目自行编写的代码采用 [MIT License](../LICENSE)，不替换原数据许可，也不覆盖汇总表、样例、图表、Tableau 内嵌数据或 Notebook 数据输出。完整原始数据和派生名单不入库，是仓库体积与复现方式的选择。
+本项目公开的 [真实客户样例](../docs/customer_samples.md) 来自该数据集，经项目 SQL 汇总与标签规则派生，再确定性选取。数据及其改编内容遵循原数据许可要求（署名、非商业、相同方式共享）。项目自行编写的代码采用 [MIT License](../LICENSE)，不替换原数据许可，也不覆盖汇总表、样例、图表、Tableau 内嵌数据或 Notebook 数据输出。
 
 ## 下载与放置方式
 
@@ -52,6 +52,6 @@ unzip data/raw/brazilian-ecommerce.zip -d data/raw/
 
 ## 重要数据口径提示
 
-- **原始数据不得提交到 GitHub**，本目录仅提供说明与 `.gitkeep` 占位。
+- 本目录提供数据准备说明；原始数据需另行下载，处理后的汇总见 [分析输出](../outputs/README.md)。
 - 客户复购识别必须使用 `customer_unique_id`；`customer_id` 是订单级客户标识，同一真实客户多次下单会生成多个 `customer_id`，不能直接用于跨订单复购统计。
-- `olist_geolocation_dataset.csv` 体量较大且坐标存在重复，是否进入核心分析将在数据字典中说明。
+- `olist_geolocation_dataset.csv` 的邮编坐标存在重复，不进入核心宽表；建模依据见 [数据字典](../docs/data_dictionary.md)。

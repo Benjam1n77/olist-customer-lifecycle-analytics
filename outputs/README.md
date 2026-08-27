@@ -1,44 +1,46 @@
-# 输出目录与公开边界
+# 分析输出
 
-此目录区分正式发布结果与本地生成产物。`local/` 表示“本地生成产物”，不是敏感性或保密等级；完整名单、中间数据和诊断不纳入 Git，是为了保持仓库精简、避免重复存储。`.gitignore` 对公开结果采用逐文件白名单，对 `local/` 整个目录忽略。
+本目录包含分析汇总表、图表和 Tableau 看板，可结合[展示 Notebook](../notebooks/01_project_showcase.ipynb)与[完整报告](../docs/project_report.md)阅读。
 
-```text
-outputs/
-├── tables/                 # 可公开：Cohort、二购、履约与校验汇总表/工作簿
-├── figures/                # 可公开：13 张正式分析图
-├── tableau/                # 可公开：6 张最终汇总 CSV、TWBX、3 张原生截图
-└── local/                  # 本地生成产物，所有文件类型均被 Git 忽略
-    ├── customer_campaign_target_list.csv
-    ├── high_value_churned_customers.csv
-    ├── simulated_campaign_tasks.csv
-    ├── diagnostics/        # 原始质检文本等诊断产物
-    ├── tableau_staging/    # Tableau 转换前的中间汇总 CSV
-    ├── notebook_runs/      # 本地执行副本与图表检查产物
-    └── legacy_previews/    # 运行旧工具时生成的设计原型，非正式截图
-```
+## 目录结构
 
-## 什么是客户级文件
+| 目录 | 内容 |
+| --- | --- |
+| `tables/` | Cohort、90 天二购、履约体验和 SQL × Python 校验汇总，以及二购分析工作簿 |
+| `figures/` | 客户分层、留存和履约体验等分析图表 |
+| `tableau/` | Dashboard 汇总数据、打包工作簿（TWBX）和三页 Tableau 原生截图 |
+| `local/` | 运行流程后生成的完整客户名单、模拟任务、中间表和诊断文件；不纳入版本控制 |
 
-一行对应一个客户，或一行对应一个可关联到客户的任务/行为，即属于客户级明细。`customer_unique_id` 是用于跨订单关联的匿名标识。“客户级”仅描述粒度，并不意味着数据必然敏感或不能公开。Olist 官方说明数据已匿名化；本项目没有添加姓名、电话等身份信息。数据来源与许可见 [数据说明](../data/README.md)。
+Tableau 工作簿与截图采用**加权 M1 留存率 0.48%**（390 / 81,265；21 个成熟 Cohort）。趋势图仅展示 `cohort_size ≥ 100`，该筛选不影响 KPI。完整口径见[指标定义](../docs/metric_definitions.md)。
 
-| 本地文件 | 粒度与内容 | 发布规则 |
-| --- | --- | --- |
-| `local/customer_campaign_target_list.csv` | 客户 ID、价值/生命周期标签、消费特征、运营建议 | 不发布 |
-| `local/high_value_churned_customers.csv` | 客户 ID、首末购日期、金额、品类、地区与体验特征 | 不发布 |
-| `local/simulated_campaign_tasks.csv` | 客户 ID、推荐动作、渠道和模拟排期 | 不发布；全部为 SIMULATED，未真实发送 |
-| `tableau/customer_segment_dashboard.csv` | 每个人群一行，仅含人数、支付占比与客单价 | 精确白名单发布 |
-| `tables/cohort_retention_long.csv` | 每个 Cohort × 月龄一行，不含客户 ID | 精确白名单发布；保留原始 Cohort 汇总行 |
+## 数据粒度与样例
 
-`local/` 也存放 Tableau 转换前汇总等非客户级中间结果。完整文件留在本地；公开 [6 条真实运营样例及完整字段说明](../docs/customer_samples.md)，每类运营规则选取一条，用于展示交付结构，不用于估计总体分布。
+汇总表按客户分群、Cohort 月龄或履约分组组织。客户级导出则以 `customer_unique_id` 为跨订单关联键，记录客户特征、标签和建议动作。
+
+| 本地导出文件 | 内容 |
+| --- | --- |
+| `local/customer_campaign_target_list.csv` | 客户标签、消费特征和运营建议 |
+| `local/high_value_churned_customers.csv` | 高价值流失客户的购买、品类、地区与体验特征 |
+| `local/simulated_campaign_tasks.csv` | 建议动作、渠道与模拟排期；全部标注为 `SIMULATED`，未实际发送 |
+
+[6 条真实运营样例与字段说明](../docs/customer_samples.md)展示每类规则的一条记录。样例按确定性规则选取，用于解释输出结构，不代表总体分布或真实营销触达。数据来源与许可见[数据说明](../data/README.md)。
 
 ## 生成与复现
 
-- `python -m src.export_outputs --campaign --churn`：将三份客户级 CSV 写入配置项 `output_local_dir`（默认 `outputs/local/`）。
-- `python -m src.export_outputs --tableau`：中间表写入 `local/tableau_staging/`，最终六张 Tableau 汇总写入 `tableau/`；不改写 TWBX 或原生截图。
-- `python -m src.build_sample_docs`：从已生成本地运营名单确定性选取真实记录，刷新 `docs/customer_samples.md`；不修改名单、不重新计算标签。
-- [展示 Notebook](../notebooks/01_project_showcase.ipynb) 只读取已发布的汇总 CSV，无需 MySQL、原始数据或本地名单，不重新拟合模型。
-- 本地目录首次运行时自动创建，不需要在 Git 中保留占位文件。发布时不要使用 `git add -f` 强制加入整个目录；若自定义输出路径，需要同步检查忽略规则。
+完成数据库建模与分析后，在项目根目录运行：
 
-原始数据仍在 `data/raw/`，去重审计明细仍在 `data/interim/`，运行日志仍在 `logs/`，真实连接配置仍在 `config/config.yaml`；这些内容继续被忽略。`docs/project_report.html` 和 `.pdf` 是不发布的本地报告副本，正式文档以 Markdown 为准。
+```bash
+# 导出完整客户名单与模拟任务
+python -m src.export_outputs --campaign --churn
 
-旧布局工具仅存于本地 `tools/legacy/`，它和其生成的设计预览均不随公开仓库发布。正式 Tableau 交付始终是 `tableau/` 中的最终 TWBX 和三张原生 PNG。
+# 导出 Tableau 汇总数据
+python -m src.export_outputs --tableau
+
+# 从现有运营名单生成样例说明，并核对一致性
+python -m src.build_sample_docs
+python -m src.build_sample_docs --check
+```
+
+客户级文件写入配置项 `output_local_dir`（默认 `outputs/local/`）；Tableau 中间表写入其下的 `tableau_staging/`，看板汇总 CSV 写入 `outputs/tableau/`。导出脚本不改写 TWBX 或截图，工作簿与图片的制作方式见[Tableau 指南](../docs/tableau_build_guide.md)。
+
+展示 Notebook 仅读取仓库中的汇总 CSV，无需 MySQL 或完整客户名单，也不重新拟合模型。

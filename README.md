@@ -162,15 +162,15 @@ The final validation stage requires the preceding analytical tables. Pipeline im
 | --- | --- |
 | `sql/`, `src/` | SQL modeling, Python analysis, validation and export code |
 | `notebooks/` | Executed, aggregate-only project showcase |
-| `docs/` | Reports, metric definitions, data dictionary and project-specific résumé material, primarily in Chinese |
+| `docs/` | Reports, metric definitions, data dictionary and supporting analysis, primarily in Chinese |
 | `outputs/tables/` | Published analytical summaries and reconciliation results |
 | `outputs/figures/`, `outputs/tableau/` | Analysis figures, final Tableau workbook, aggregate inputs and screenshots |
 | `tests/`, `.github/` | Automated checks and CI |
-| `outputs/local/`, `tools/legacy/` | Local-only generated artifacts and legacy preview tooling; not included on GitHub |
+| `outputs/local/` | Full customer exports, intermediate tables and diagnostics generated when running the pipeline; not version-controlled |
 
-Raw CSVs, full customer lists, credentials, the complete personal résumé, caches and temporary outputs are excluded from publication. Keeping customer-level outputs local is a repository-scope decision, not a claim that the public Olist dataset is confidential.
+Download the raw dataset separately to rebuild the pipeline. The repository includes aggregate results; complete customer exports and intermediate outputs are generated locally. Database credentials belong in local configuration or environment variables.
 
-[Six real anonymized customer examples (Chinese)](docs/customer_samples.md) include field definitions and a deterministic selection method; they are not a random sample or evidence of actual marketing contact. See the [output and publication guide (Chinese)](outputs/README.md).
+[Six real anonymized customer examples (Chinese)](docs/customer_samples.md) include field definitions and a deterministic selection method; they are not a random sample or evidence of actual marketing contact. See the [output guide (Chinese)](outputs/README.md).
 
 ## Limitations
 

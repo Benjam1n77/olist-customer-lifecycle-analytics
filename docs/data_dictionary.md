@@ -205,7 +205,7 @@ sellers.seller_zip_code_prefix         -> geolocation.geolocation_zip_code_prefi
 
 ---
 
-## 建模注意事项（贯穿后续阶段）
+## 建模注意事项
 
 1. **禁止**在未聚合时执行 `orders JOIN order_items JOIN order_payments JOIN order_reviews`：商品行与支付行均为一对多，直接连接会行数膨胀。必须先各自聚合到 `order_id` 粒度再连接。
 2. 复购、留存、流失一律以 `customer_unique_id` 为主体。

@@ -1,6 +1,6 @@
 # 指标口径定义（Metric Definitions）
 
-> 本文档记录所有指标的精确计算口径，随阶段推进持续补充。
+> 本文档定义分析样本、指标计算、客户标签与观察窗口。
 > 任何分析结果引用指标时，以本文档为准。
 
 ---
@@ -9,12 +9,12 @@
 
 | 口径项 | 定义 | 说明 |
 | --- | --- | --- |
-| analysis_date | 数据集中最大有效购买日期 + 1 天 | 所有 Recency、流失、生命周期判断的观察日（阶段 5/6 计算时确定具体日期） |
+| analysis_date | 数据集中最大有效购买日期 + 1 天 | 所有 Recency、流失、生命周期判断的观察日，本数据集为 2018-08-30 |
 | 有效订单 | `order_status = 'delivered'` | 核心用户价值与复购分析仅统计已交付订单；全状态分布保留在 mart_order_summary |
 | 客户主体 | `customer_unique_id` | 复购、留存、流失分析一律以真实客户 ID 为主体 |
 | 金额单位 | BRL（巴西雷亚尔），DECIMAL(10,2) | 所有金额保留 2 位小数 |
 
-### 金额口径（Brief 3.3）
+### 金额口径
 
 ```text
 goods_amount   = 订单内 SUM(price)                 商品价格合计
@@ -27,7 +27,7 @@ payment_amount = 订单内 SUM(payment_value)          实际支付记录金额�
 
 ---
 
-## 阶段 4：订单宽表（mart_order_summary）口径
+## 订单宽表（mart_order_summary）口径
 
 ### 聚合规则（一单多行 → 一单一行）
 
@@ -42,7 +42,7 @@ payment_amount = 订单内 SUM(payment_value)          实际支付记录金额�
 | payment_amount | SUM(payment_value) | 组合支付合计 |
 | main_payment_type | 支付金额最高的方式；并列取类型名字典序较小者 | 确定性规则 |
 | max_installments | MAX(payment_installments) | 最大分期数 |
-| review_score | MAX(review_score) | 同单多评价（243 单）取最高分，代表客户最终满意状态 |
+| review_score | MAX(review_score) | 同单多评价（243 单）按最高分汇总，不据此推断评价先后顺序 |
 | has_review_comment | 任一条评价含标题或正文 → 1 | 评论存在性 |
 | review_response_days | 取提交时间最新一条的 DATEDIFF(提交 − 问卷创建) | 代表最终响应时长 |
 
@@ -70,7 +70,7 @@ is_low_score            = review_score <= 2（1/0；无评价为 NULL）
 
 ---
 
-## 阶段 5：用户宽表（mart_customer_features）口径
+## 用户宽表（mart_customer_features）口径
 
 ### 覆盖范围与观察日
 
@@ -81,7 +81,7 @@ is_low_score            = review_score <= 2（1/0；无评价为 NULL）
 | 排除客户数 | 2,738 | 仅有无效订单（canceled 等）的客户，不进入核心分析 |
 | recency_days 范围 | 1 – 714 天 | 无负值（已验证） |
 
-#### 客户口径勾稽关系（重要，README 披露用）
+#### 客户口径勾稽关系
 
 ```text
 全量真实客户数（订单中出现过的 customer_unique_id） = 96,096
@@ -112,7 +112,7 @@ is_low_score            = review_score <= 2（1/0；无评价为 NULL）
 | low_score_order_count / rate | is_low_score=1 的单数；分母为有评价的单数 |
 | customer_state | **最近订单口径**：最近一笔 delivered 订单对应的州；同日多单按 order_id 字典序确定性取一 |
 
-### 实测分布（阶段 5 产出，非预测）
+### 用户宽表实测分布
 
 | 指标 | 数值 |
 | --- | --- |
@@ -121,16 +121,16 @@ is_low_score            = review_score <= 2（1/0；无评价为 NULL）
 | 最多订单数 | 15 |
 | Recency ≤30 / ≤90 / 91–180 / >180 天 | 6,621 / 18,390 / 19,587 / 55,381 |
 
-> 复购口径注：此处 2,801 为“≥2 笔 delivered 订单”口径；阶段 3 A5 的 2,997 为“≥2 个 customer_id（含未交付）”口径，差异来自部分复购客户的第二单未交付，两者不矛盾。
-> Recency 分布显示 59.3% 客户距观察日超 180 天，印证一次性购买与高流失并存，为阶段 6 生命周期阈值提供依据。
+> 复购口径注：此处 2,801 为“≥2 笔 delivered 订单”口径；原始客户表质量检查 A5 的 2,997 为“≥2 个 customer_id（含未交付）”口径，两者的订单状态范围不同。
+> Recency 分布显示 59.3% 客户距观察日超 180 天；这是历史行为分布，不代表对未来购买行为的预测。
 
 ---
 
-## 阶段 6：用户标签与分层（dim_customer_segment）口径
+## 用户标签与分层（dim_customer_segment）口径
 
 ### RFM 评分（数据适配版）
 
-97% 客户为一次性购买，F 若机械五等分会失去区分度，故按 Brief 10.1 调整：
+97% 客户为一次性购买，F 若机械五等分会失去区分度，因此采用以下频次分段：
 
 | 维度 | 评分规则 | 实测阈值（数据推导） |
 | --- | --- | --- |
@@ -141,7 +141,7 @@ is_low_score            = review_score <= 2（1/0；无评价为 NULL）
 
 分位数用 ROW_NUMBER 取第 CEIL(q×n) 行实现（MySQL 8.0 无 PERCENTILE_CONT），并列时按 customer_unique_id 确定性排序。
 
-### 价值标签（Brief 10.2）
+### 价值标签
 
 | 标签 | 规则 | 实测人数 |
 | --- | --- | --- |
@@ -149,7 +149,7 @@ is_low_score            = review_score <= 2（1/0；无评价为 NULL）
 | mid_value | p20 ≤ total_payment < p80 | 56,014（60.00%） |
 | low_value | total_payment < p20（55.26 BRL） | 18,669（20.00%） |
 
-### 生命周期标签（Brief 10.3 初始规则，未调整）
+### 生命周期标签
 
 | 标签 | 规则 | 实测人数 |
 | --- | --- | --- |
@@ -158,7 +158,7 @@ is_low_score            = review_score <= 2（1/0；无评价为 NULL）
 | at_risk | 90 < recency ≤ 180 | 19,587（20.98%） |
 | churned | recency > 180 | 55,381（59.32%） |
 
-阈值来源说明：采用 Brief 初始规则（30/90/180 天）；阶段 5 输出的 Recency 分布（6,621/18,390/19,587/55,381）与该阈值划分自然对齐，无调整必要。
+生命周期采用 30/90/180 天的规则阈值。对应的 Recency 分布为 6,621/18,390/19,587/55,381 人；这些阈值用于历史客户分层，未通过预测模型或实验优化。
 
 ### 行为标签（6 个布尔标签 + 1 个主标签）
 
@@ -172,11 +172,11 @@ is_low_score            = review_score <= 2（1/0；无评价为 NULL）
 
 behavior_segment 主标签优先级：high_aov > installment_user > category_focused > price_sensitive > repeat_buyer > one_time_buyer。
 
-### 履约体验标签（Brief 10.5）
+### 履约体验标签
 
 | 标签 | 规则 |
 | --- | --- |
-| service_recovery_needed | delayed_order_count ≥ 1 且 average_review_score ≤ 2（Brief 示例规则） |
+| service_recovery_needed | delayed_order_count ≥ 1 且 average_review_score ≤ 2 |
 | low_satisfaction | average_review_score ≤ 2 |
 | frequent_delay | delayed_order_rate ≥ 0.5 且 delayed_order_count ≥ 2 |
 | delivery_delayed | delayed_order_count ≥ 1 |
@@ -201,7 +201,7 @@ experience_segment 主标签优先级：service_recovery_needed > low_satisfacti
 
 ---
 
-## 阶段 7：Cohort 留存（cohort_retention_long）口径
+## Cohort 留存（cohort_retention_long）口径
 
 ### 定义
 
@@ -212,13 +212,13 @@ experience_segment 主标签优先级：service_recovery_needed > low_satisfacti
 | month_index | TIMESTAMPDIFF(MONTH, cohort_month, activity_month)，M0 = 首购当月（留存恒 100%，已验证） |
 | retention_rate | retained_customers / cohort_size |
 
-### 观察窗口截断（成熟 Cohort 口径，Brief 11.2 强制要求）
+### 观察窗口截断与成熟 Cohort
 
 - analysis_date = 2018-08-30，2018-08 为不完整月份，观察窗口终点取最后完整月 **2018-07**（由数据推导，非硬编码）；
-- **可观察格子全量生成**：留存为 0 也记 0（真实发生的流失）；
+- **可观察格子全量生成**：当月没有留存客户时记 0；
 - **不可观察格子不生成行**：绝不把未来尚未发生的月份视为 0 留存；
-- **副作用及勾稽**：首购在 2018-08 的 6,144 名客户无法观察 M0，不进入 Cohort；Cohort 总人数 87,214 + 6,144 = 93,358（已验证）；
-- 成熟定义：某 Cohort 的 month_index = k 格子存在即代表已可观察；M1 对外 KPI 按客户数加权汇总，M2/M3 继续对可观察成熟 Cohort 的明细留存率取简单平均。
+- **覆盖范围勾稽**：首购在 2018-08 的 6,144 名客户无法观察完整 M0，不进入 Cohort；Cohort 总人数 87,214 + 6,144 = 93,358（已验证）；
+- 成熟定义：某 Cohort 的 month_index = k 格子存在即代表已可观察；M1 KPI 按客户数加权汇总，M2/M3 对可观察成熟 Cohort 的明细留存率取简单平均。
 
 ### 实测结果（SQL 与 Python 双端一致）
 
@@ -228,7 +228,7 @@ experience_segment 主标签优先级：service_recovery_needed > low_satisfacti
 | M2 留存率 | 20（2016-09 ~ 2018-05） | 成熟 Cohort 简单平均 | **0.29%** |
 | M3 留存率 | 19（2016-09 ~ 2018-04） | 成熟 Cohort 简单平均 | **0.21%** |
 
-共 22 个 Cohort（2016-09 ~ 2018-07），255 行留存明细。对外展示的加权 M1 留存率为 0.48%；M2/M3 保留原成熟 Cohort 简单平均口径，因此不将三者作为同一聚合口径的连续趋势直接比较。阶段 5 实测一次性购买率为 97.00%。
+共 22 个 Cohort（2016-09 ~ 2018-07），255 行留存明细。加权 M1 留存率为 0.48%；M2/M3 使用成熟 Cohort 简单平均，因此不将三者作为同一聚合口径的连续趋势直接比较。用户宽表实测一次性购买率为 97.00%。
 
 ### 产出文件
 
@@ -240,11 +240,11 @@ outputs/figures/06_cohort_retention_heatmap.png  # 热力图（不可观察格�
 
 ---
 
-## 阶段 8：履约体验分析口径与实测
+## 履约体验分析口径与实测
 
 ### 分析样本
 
-仅取 delivered 且 is_delayed 可判定（签收/预计时间齐全）且有评价的订单：共 **95,364 笔**（已验证与订单宽表勾稽一致）。对应 Brief“配送分析只针对具有实际签收时间和预计签收时间的订单”。
+仅取 delivered 且 is_delayed 可判定（签收/预计时间齐全）且有评价的订单：共 **95,364 笔**（已验证与订单宽表勾稽一致）。
 
 ### 延迟分段口径
 
@@ -274,11 +274,11 @@ outputs/figures/06_cohort_retention_heatmap.png  # 热力图（不可观察格�
 | --- | --- | --- |
 | 卡方检验（延迟×低评分） | χ²=12,670.16, p<0.001, Cramér's V=0.3645 | 关联显著且强度中等偏强 |
 | Mann–Whitney U（两组评分分布） | p<0.001 | 分布显著不同（评分为有序分类，不满足正态假设故用非参数检验） |
-| 控制变量逻辑回归（Brief 11.4 可选项，已实现） | 延迟 OR=11.35（95% CI 10.78–11.95），p<0.001，伪R²=0.1294，n=95,364 | 控制州、主类别、订单金额（对数）后，延迟订单出现低评分的几率仍约为准时订单的 11.3 倍，关联稳健 |
+| 控制变量逻辑回归 | 延迟 OR=11.35（95% CI 10.78–11.95），p<0.001，伪R²=0.1294，n=95,364 | 控制州、主类别、订单金额（对数）后，延迟订单出现低评分的赔率约为准时订单的 11.3 倍 |
 
 模型设定：`is_low_score ~ is_delayed + ln(item_amount+1) + 州哑变量 + 主类别哑变量`（statsmodels Logit，BFGS）。金额取对数缓解右偏；类别空值归为 unknown。
 
-**结论表述（Brief 约束）**：配送延迟与较低评分显著相关，且该关联在控制类别、地区与订单金额后依然稳健。仍不说“延迟导致低评分”——观察性数据无法排除全部混淆因素（如商品特性、客服响应等未观测变量），回归系数只体现统计关联。
+**结论与限制**：配送延迟与较低评分显著相关，且该关联在控制类别、地区与订单金额后仍显著。观察性数据无法排除全部混淆因素（如商品特性、客服响应等未观测变量），回归系数不构成因果证据。
 
 ---
 
@@ -320,7 +320,7 @@ outputs/figures/06_cohort_retention_heatmap.png  # 热力图（不可观察格�
 
 ---
 
-## 阶段 9：营销人群名单（mart_campaign_target_list）口径
+## 营销人群名单（mart_campaign_target_list）口径
 
 ### 规则级联（自上而下命中即停，每人一条互斥推荐）
 
@@ -337,6 +337,6 @@ outputs/figures/06_cohort_retention_heatmap.png  # 热力图（不可观察格�
 
 ### 口径勾稽与边界
 
-- SECOND_PURCHASE 窗口 14–180 天：<14 天未到二购激励时机（Brief：首购后 14–30 天），>180 天已按流失处理；人数勾稽：一次性购买 14–180 天共 35,003 人 − 其中高价值已流失 1,476 人（被规则 2 优先命中）= 33,527 ✓
+- SECOND_PURCHASE 名单按 recency 14–180 天筛选；建议动作中的“14–30 天”描述建议触达时点，不是名单筛选窗口。人数勾稽：一次性购买 14–180 天共 35,003 人 − 已被更高优先级规则命中的 1,476 人 = 33,527 ✓
 - 未命中任何规则的客户（约 21,934 人，如低价值已流失且无品类偏好）不进入名单；
 - 本项目只输出名单与推荐动作，**未实现真实触达**；模拟触达任务表（simulated_campaign_tasks.csv）全部标注 SIMULATED，仅演示按优先级排期（服务补救+1天 → 品类推广+14天）。

@@ -167,7 +167,7 @@ mysql -u root -pyour_mysql_password olist_ecommerce < sql/03_data_quality_checks
 ### 数据质量结论
 
 > 整体数据质量良好，9 张表关联完整性为 100%，核心分析所需的 delivered 订单有 96,478 笔，
-> 无主键重复、无关联孤立、无系统性空值，可进入阶段 4 订单宽表构建。
+> 导入后的主键唯一性与关联完整性检查通过，质量检查记录为订单宽表构建提供依据。
 
 ---
 

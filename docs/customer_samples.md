@@ -1,16 +1,16 @@
 # 真实客户样例与字段说明
 
-本页展示 **6 条真实客户级派生记录**，每类运营规则一条。购买金额、评分等来自项目实际处理结果；标签、建议动作和渠道来自已有 SQL 规则。没有虚构客户、随机造数或重新计算指标。
+本页展示 **6 条真实客户级派生记录**，每类运营规则一条。购买金额、评分等来自项目处理结果；标签、建议动作和渠道由 SQL 规则生成。
 
 ## 样例来源与选取方式
 
 - 原始来源：[Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)，Olist 提供的公开匿名化数据。
-- 本地完整来源：`outputs/local/customer_campaign_target_list.csv`，本次源文件共 71,424 条记录；完整 CSV 不随 GitHub 发布。
+- 完整来源：`outputs/local/customer_campaign_target_list.csv`，共 71,424 条记录，由项目流程在本地生成。
 - 生成逻辑：[运营圈选 SQL](../sql/12_campaign_target_list.sql) → [CSV 导出](../src/export_outputs.py) → [样例说明生成](../src/build_sample_docs.py)。
 - 选取规则：各 `reason_code` 内按完整 `customer_unique_id` 字典序升序，取第一条；展示顺序沿用运营规则顺序。
 - 源文件 SHA-256：`dbde3a883ab9c0c6f5a9045c3e30ed3ef265747d13a11dac3a6392d1c29ab0ec`。
 
-这是一组用于解释字段与规则的确定性样例，**不是随机抽样，不代表总体占比或典型客户**。所有匿名 ID 与字段值均保留原值，未替换成虚构标识。客户级是数据粒度，不是保密等级。
+这是一组用于解释字段与规则的确定性样例，**不是随机抽样，不代表总体占比或典型客户**。匿名 ID 与字段值均保留源文件原值。
 
 ## 核心字段预览
 
@@ -34,9 +34,9 @@
 | VIP_ENGAGE | medium_high | VIP权益、新品优先体验、推荐奖励 | App/会员中心 |
 | CATEGORY_PROMO | medium | 对应品类内容、活动和商品推荐 | App推送/社交媒体 |
 
-`recommended_channel` 是建议渠道类别，不表示数据集包含该客户的邮箱或电话号码，也不证明触达渠道可用。`SECOND_PURCHASE` 名单仍沿用原有 Recency 14–180 天条件；建议动作中的“14–30 天”是原规则文案，不改变名单条件。这与首购后第 1–90 天的跨日二购分析窗口是不同口径。
+`recommended_channel` 是建议渠道类别，不表示数据集包含该客户的邮箱或电话号码，也不证明触达渠道可用。`SECOND_PURCHASE` 名单的筛选条件为 Recency 14–180 天；建议动作中的“14–30 天”描述建议触达时点，不是名单筛选窗口。两者也不同于首购后第 1–90 天的跨日二购分析窗口。
 
-本项目未实施真实营销触达或 A/B 实验。另一个本地文件 `simulated_campaign_tasks.csv` 的排期是模拟的，任务状态为 `SIMULATED`，不能当作实际发送或实验结果。
+本项目未实施真实营销触达或 A/B 实验。`simulated_campaign_tasks.csv` 仅演示排期，任务状态为 `SIMULATED`，不代表实际发送或实验结果。
 
 ## 完整字段字典
 
@@ -45,7 +45,7 @@
 | customer_unique_id | 字符串 | 公开数据中的匿名客户标识；跨订单关联键，不是姓名或联系方式。 |
 | value_segment | 分类标签 | 价值分层：high_value / mid_value / low_value；由历史支付分位数规则生成。 |
 | lifecycle_stage | 分类标签 | 生命周期：new_customer / active_customer / at_risk / churned；依据最近购买时间等规则生成。 |
-| behavior_segment | 分类标签 | 行为主标签，如 installment_user、high_aov、category_focused；遵循原有优先级。 |
+| behavior_segment | 分类标签 | 行为主标签，如 installment_user、high_aov、category_focused；按标签优先级确定。 |
 | experience_segment | 分类标签 | 履约体验标签，如 service_recovery_needed、low_satisfaction、delivery_normal。 |
 | favorite_category | 字符串 | 按项目规则选出的偏好品类，保留原品类编码；不是人工推测。 |
 | order_count | 整数／笔 | 客户已交付订单数；不同于商品件数。 |
@@ -57,7 +57,7 @@
 | recommended_action | 字符串 | SQL 规则生成的建议运营动作；不是已执行动作或效果记录。 |
 | recommended_channel | 字符串 | 规则配套的建议渠道名称；不是已验证可用的联系方式。 |
 | campaign_priority | 分类标签 | 规则优先级：high / medium_high / medium。 |
-| reason_code | 分类标签 | 互斥运营规则命中原因；按原有规则顺序命中即停。 |
+| reason_code | 分类标签 | 互斥运营规则命中原因；按规则优先级命中即停。 |
 
 标签阈值、优先级和观察窗口以 [指标定义](metric_definitions.md) 为准。空值保留为空，不能当作零；数值不重新四舍五入。
 

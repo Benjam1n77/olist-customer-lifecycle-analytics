@@ -2,11 +2,11 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-> 语言说明：本页为中文完整版；详细报告、Notebook 叙述与 Tableau 标注继续保留中文。英文首页见上方 English 链接。
+> 语言说明：本页为中文完整版；详细报告、Notebook 叙述与 Tableau 标注均为中文。英文首页见上方 English 链接。
 
 > 基于 Olist 巴西电商公开数据完成的端到端数据分析项目：从多表建模、用户生命周期与 RFM 标签，到运营人群圈选和 Tableau 看板数据输出。
 
-快速审阅：[展示 Notebook](notebooks/01_project_showcase.ipynb) · [完整报告](docs/project_report.md) · [输出目录与公开边界](outputs/README.md)
+快速审阅：[展示 Notebook](notebooks/01_project_showcase.ipynb) · [完整报告](docs/project_report.md) · [输出说明](outputs/README.md)
 
 ![项目架构预览](docs/images/project_architecture.png)
 
@@ -229,19 +229,18 @@ Notebook 重新核算加权 M1 留存率 0.48%，并检查源文件哈希不变�
 
 ### 文件夹分工
 
-| 目录 | 主要内容 | GitHub 发布范围 |
-| --- | --- | --- |
-| `sql/`、`src/` | 建模 SQL、生产分析与导出代码 | 发布 |
-| `notebooks/` | 精简、已执行的展示 Notebook | 发布 |
-| `docs/` | 指标、报告、建模说明与项目简历素材 | 发布项目源文档；忽略完整个人简历及本地 HTML/PDF 报告副本 |
-| `outputs/tables/` | Cohort、二购、履约与校验汇总 | 精确白名单 |
-| `outputs/figures/`、`outputs/tableau/` | 正式分析图、最终 Tableau 数据、TWBX 与原生截图 | 精确白名单 |
-| `outputs/local/` | 客户级名单、模拟任务、中间 CSV、诊断与本地预览 | 整个目录不发布 |
-| `tools/legacy/` | 历史布局原型工具，仅供本地保留 | 整个目录不发布 |
-| `data/`、`logs/`、`config/` | 本地输入、审计明细、日志和配置 | 仅发布数据说明、占位文件和配置示例 |
-| `tests/`、`.github/` | 自动化测试与 CI | 发布 |
+| 目录 | 主要内容 |
+| --- | --- |
+| `sql/`、`src/` | 建模 SQL、生产分析、验证与导出代码 |
+| `notebooks/` | 已执行的展示 Notebook |
+| `docs/` | 指标定义、分析报告、数据字典与建模说明 |
+| `outputs/tables/` | Cohort、二购、履约与校验汇总 |
+| `outputs/figures/`、`outputs/tableau/` | 分析图、Tableau 汇总数据、打包工作簿与原生截图 |
+| `outputs/local/` | 运行流程后生成的完整客户名单、模拟任务、中间表和诊断；不纳入版本控制 |
+| `data/`、`logs/`、`config/` | 数据说明、配置示例，以及本地运行所需的输入、日志和配置 |
+| `tests/`、`.github/` | 自动化测试与 CI |
 
-客户级只描述数据粒度，不等于敏感或不可公开。本项目使用公开匿名化数据，完整客户名单与中间产物集中到 `outputs/local/`，不纳入 Git 是为了减少重复数据和仓库体积。公开展示 [6 条真实运营样例及字段说明](docs/customer_samples.md)，按每类规则一条确定性选取，不代表随机样本或实际触达。目录与生成方式见 [输出目录说明](outputs/README.md)。旧设计预览工具保留在本地 `tools/legacy/build_tableau_previews.py`，不上传 GitHub，也不覆盖最终 Tableau 原生截图。
+完整重建需另行下载原始数据，客户名单和中间结果由流程生成。[6 条真实运营样例及字段说明](docs/customer_samples.md)按每类规则一条确定性选取，用于说明交付结构，不代表随机样本或实际触达。目录与生成方式见 [输出说明](outputs/README.md)。
 
 ## 12. 项目限制
 
