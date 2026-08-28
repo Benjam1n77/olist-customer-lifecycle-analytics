@@ -64,7 +64,7 @@ def _run_sql_files(*files: str) -> None:
 
 
 def run_build_order_mart() -> None:
-    """阶段 4：构建三张聚合表与订单宽表。"""
+    """构建三张订单级聚合表与订单宽表。"""
     _run_sql_files(
         "04_order_item_aggregation.sql",
         "05_payment_aggregation.sql",
@@ -74,17 +74,17 @@ def run_build_order_mart() -> None:
 
 
 def run_build_customer_mart() -> None:
-    """阶段 5：构建用户粒度特征宽表（依赖阶段 4）。"""
+    """基于订单宽表构建客户粒度特征宽表。"""
     _run_sql_files("08_build_customer_feature_mart.sql")
 
 
 def run_segmentation() -> None:
-    """阶段 6：RFM 与多维标签分层（依赖阶段 5）。"""
+    """基于客户特征构建 RFM 与多维标签分层。"""
     _run_sql_files("09_customer_segmentation.sql")
 
 
 def run_cohort() -> None:
-    """阶段 7：Cohort 留存（SQL 计算 + Python 导出 CSV 与热力图）。"""
+    """计算 Cohort 留存，并导出 CSV 与热力图。"""
     _run_sql_files("10_cohort_retention.sql")
     from src import analyze_cohort
 
@@ -94,7 +94,7 @@ def run_cohort() -> None:
 
 
 def run_delivery() -> None:
-    """阶段 8：履约体验分析（SQL 聚合 + Python 统计检验）。"""
+    """执行履约体验聚合与统计检验。"""
     _run_sql_files("11_delivery_experience.sql")
     from src import analyze_delivery
 
@@ -113,7 +113,7 @@ def run_repeat_purchase_90d() -> None:
 
 
 def run_campaign() -> None:
-    """阶段 9：营销人群名单（SQL 规则级联 + Python 导出 CSV）。"""
+    """按规则级联构建营销人群名单并导出 CSV。"""
     _run_sql_files("12_campaign_target_list.sql")
     from src import export_outputs
 
@@ -123,7 +123,7 @@ def run_campaign() -> None:
 
 
 def run_export() -> None:
-    """阶段 10：12 张 Python 图表 + 高价值流失名单 + Tableau 数据。"""
+    """导出 Python 图表、高价值流失名单和 Tableau 数据。"""
     from src import build_visuals, export_outputs
 
     rc = export_outputs.main(["--churn", "--tableau"])
@@ -143,19 +143,18 @@ def run_validate_data() -> None:
     if rc != 0:
         raise RuntimeError("validate_data 交叉验证存在失败项")
 
-# 阶段注册表：名称 -> 执行函数。尚未实现的阶段值为 None，运行时会明确报错，
-# 而不是静默跳过或产出虚构结果。
+# 阶段注册表：名称 -> 执行函数。尚未实现的阶段值为 None，运行时明确报错。
 STAGE_REGISTRY: dict[str, Callable[[], None] | None] = {
-    "load_data": lambda: load_data.main(),      # 阶段 3：CSV → MySQL 导入
+    "load_data": lambda: load_data.main(),        # CSV → MySQL 导入
     "validate_data": run_validate_data,           # 质量检查 + 交叉验证
-    "build_order_mart": run_build_order_mart,    # 阶段 4：订单粒度宽表
-    "build_customer_mart": run_build_customer_mart,  # 阶段 5：用户粒度宽表
-    "segmentation": run_segmentation,              # 阶段 6：用户标签与生命周期
-    "cohort": run_cohort,                          # 阶段 7：Cohort 留存
-    "delivery": run_delivery,                      # 阶段 8：履约体验分析
+    "build_order_mart": run_build_order_mart,      # 订单粒度宽表
+    "build_customer_mart": run_build_customer_mart,  # 用户粒度宽表
+    "segmentation": run_segmentation,              # 用户标签与生命周期
+    "cohort": run_cohort,                          # Cohort 留存
+    "delivery": run_delivery,                      # 履约体验分析
     "repeat_purchase_90d": run_repeat_purchase_90d,  # 首购后 90 天二购驱动
-    "campaign": run_campaign,                      # 阶段 9：营销人群名单
-    "export": run_export,                          # 阶段 10：图表与 Tableau 输出
+    "campaign": run_campaign,                      # 营销人群名单
+    "export": run_export,                          # 图表与 Tableau 输出
 }
 
 
@@ -227,9 +226,7 @@ def run_stage(stage_name: str) -> int:
         return 2
     func = STAGE_REGISTRY[stage_name]
     if func is None:
-        logger.error(
-            "阶段 %s 尚未实现。本项目按阶段推进，不生成任何虚构结果。", stage_name
-        )
+        logger.error("阶段 %s 尚未实现。", stage_name)
         return 1
     logger.info("开始执行阶段：%s", stage_name)
     func()

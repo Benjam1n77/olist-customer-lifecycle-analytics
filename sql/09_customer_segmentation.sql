@@ -2,7 +2,7 @@
 -- 09_customer_segmentation.sql
 -- 目的：构建用户标签与生命周期分层表 dim_customer_segment
 -- 粒度：一行一个 customer_unique_id（93,358 人，与 mart_customer_features 一致）
--- 依赖：mart_customer_features（阶段 5）、mart_order_summary（阶段 4）
+-- 依赖：mart_customer_features、mart_order_summary
 -- 设计说明（详见 docs/metric_definitions.md）：
 --   RFM 数据适配：97% 客户为一次性购买，F 若机械五等分会失去区分度。
 --   因此 R/M 用分位数评分，F 先区分一次性/复购再细分频次。
@@ -15,7 +15,7 @@ USE olist_ecommerce;
 DROP TABLE IF EXISTS dim_customer_segment;
 CREATE TABLE dim_customer_segment AS
 WITH
--- ---------- 0. 分位数阈值（数据推导，避免手工拍脑袋） ----------
+-- ---------- 0. 分位数阈值（由当前分析样本推导） ----------
 -- 说明：MySQL 8.0 不支持 PERCENTILE_CONT，改用 ROW_NUMBER 取第 CEIL(q*n) 行的方式
 ranked AS (
     SELECT
@@ -103,13 +103,13 @@ rfm AS (
             WHEN cf.total_payment <= p.m_p80 THEN 4
             ELSE 5
         END AS m_score,
-        -- 价值分层（Brief 10.2）
+        -- 价值分层
         CASE
             WHEN cf.total_payment >= p.m_p80 THEN 'high_value'
             WHEN cf.total_payment >= p.m_p20 THEN 'mid_value'
             ELSE 'low_value'
         END AS value_segment,
-        -- 生命周期（Brief 10.3 初始规则，Recency 分布已在阶段 5 输出佐证）
+        -- 生命周期：使用 30 / 90 / 180 天规则阈值
         CASE
             WHEN cf.recency_days <= 30 AND cf.order_count = 1 THEN 'new_customer'
             WHEN cf.recency_days <= 90 THEN 'active_customer'
@@ -142,7 +142,7 @@ behavior AS (
         END AS behavior_segment
     FROM rfm r
 ),
--- ---------- 4. 履约体验标签（Brief 10.5） ----------
+-- ---------- 4. 履约体验标签 ----------
 experience AS (
     SELECT
         b.*,

@@ -7,7 +7,7 @@
 4. 导入完成后输出行数校验。
 
 导入策略：
-- 使用 LOAD DATA LOCAL INFILE（速度最快）；
+- 当前入口使用 pandas 解析 CSV，并通过 executemany 分批写入；
 - translation.csv 表头无引号（其余 8 个有引号），分别处理；
 - order_items / order_payments 存在一单多行，不做去重，由后续 SQL 聚合。
 

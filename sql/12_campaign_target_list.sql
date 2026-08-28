@@ -1,8 +1,8 @@
 -- =============================================================
 -- 12_campaign_target_list.sql
--- 目的：构建营销人群名单 mart_campaign_target_list（Brief 第 12 节）
+-- 目的：构建营销人群名单 mart_campaign_target_list
 -- 粒度：一行一个 customer_unique_id（每人至多一条推荐，互斥规则级联）
--- 依赖：mart_customer_features（阶段 5）、dim_customer_segment（阶段 6）
+-- 依赖：mart_customer_features、dim_customer_segment
 -- 规则设计（优先级自上而下，命中即停）：
 --   1. SERVICE_RECOVERY   履约受损客户            → 售后关怀/补偿券/满意度回访   high
 --   2. WINBACK_HIGH_VALUE 高价值已流失            → 专属召回优惠/会员关怀       high
@@ -11,8 +11,8 @@
 --   5. VIP_ENGAGE         高价值活跃              → VIP权益/新品优先/推荐奖励   medium_high
 --   6. CATEGORY_PROMO     品类偏好明显            → 对应品类内容/活动/商品推荐  medium
 -- 口径说明：
---   - SECOND_PURCHASE 的 recency 窗口取 14–180 天：<14 天尚未到二购激励时机
---     （Brief：首购后 14–30 天），>180 天已按流失处理；
+--   - SECOND_PURCHASE 的 recency 窗口取 14–180 天：<14 天尚未到二购激励时机，
+--     >180 天已按流失处理；建议动作中的 14–30 天描述触达时点，不是筛选窗口；
 --   - 未命中任何规则的客户不进入名单（如低价值已流失且无品类偏好）；
 --   - 本项目只输出名单与推荐动作，不声称已实现真实触达。
 -- 可重复执行：DROP TABLE IF EXISTS + CREATE TABLE

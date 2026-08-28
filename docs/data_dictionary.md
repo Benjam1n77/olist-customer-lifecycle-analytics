@@ -1,7 +1,7 @@
 # 数据字典（Data Dictionary）
 
 > 依据本地 `data/raw/` 中 9 个 CSV 文件的实际表头与抽样检查编写。
-> 行数为 CSV 数据行数（不含表头），由本地 `wc -l` 统计。
+> 行数为 CSV 解析后的数据记录数（不含表头）；含内嵌换行或文件末尾无换行时，不以 `wc -l` 代替记录数。
 
 ## 表关系总览
 
@@ -103,14 +103,14 @@ sellers.seller_zip_code_prefix         -> geolocation.geolocation_zip_code_prefi
 | payment_installments | INT | 分期数 |
 | payment_value | DECIMAL(10,2) | 支付金额（BRL） |
 
-- 数据质量风险：存在无支付记录的订单（行数少于订单数，需在质量检查中确认缺失订单状态）；支付总额与商品+运费总额可能存在差异，不得假设二者相等。
+- 数据质量风险：103,886 条支付记录覆盖 99,440 笔订单，另有 1 笔订单无支付记录；支付总额与商品+运费总额可能存在差异，不得假设二者相等。
 - 是否进入核心分析：**是**（金额与支付行为指标来源）。
 
 ## 5. order_reviews（订单评价表）
 
 - 来源文件：`olist_order_reviews_dataset.csv`
 - 数据行数：CSV 实际记录 99,224 条（物理行数 104,719 被评价文本内嵌换行符抬高，统计需用 CSV 解析器）
-- 数据粒度：一行一条评价（评价数多于订单数，可能存在重复评价）
+- 数据粒度：一行一条评价；99,224 条原始记录中既有重复 `review_id`，也可能同单多评价
 - 主键：`review_id`（需在质量检查中验证唯一性）
 - 外键：`order_id -> orders.order_id`
 
@@ -124,7 +124,7 @@ sellers.seller_zip_code_prefix         -> geolocation.geolocation_zip_code_prefi
 | review_creation_date | DATETIME | 评价问卷创建时间 |
 | review_answer_timestamp | DATETIME | 用户提交评价时间 |
 
-- 数据质量风险：评价行数多于订单行数，同一订单可能有多条评价（聚合规则需在指标文档明确）；评论文本字段空值率高。
+- 数据质量风险：同一订单可能有多条评价，且原始文件存在重复 `review_id`（导入与聚合规则需在指标文档明确）；评论文本字段空值率高。
 - 是否进入核心分析：**是**（满意度与履约体验分析核心）。
 
 ## 6. products（商品表）
@@ -190,7 +190,7 @@ sellers.seller_zip_code_prefix         -> geolocation.geolocation_zip_code_prefi
 ## 9. translation（类别翻译表）
 
 - 来源文件：`product_category_name_translation.csv`
-- 数据行数：70
+- 数据行数：71
 - 数据粒度：一行一个类别翻译
 - 主键：`product_category_name`
 - 外键：无（被 `products.product_category_name` 引用）

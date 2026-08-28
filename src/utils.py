@@ -13,12 +13,12 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta
 from typing import Any, Sequence
 
-# ---------- 生命周期阈值（Brief 10.3 初始规则，未调整） ----------
+# ---------- 生命周期规则阈值 ----------
 NEW_CUSTOMER_RECENCY_MAX = 30
 ACTIVE_RECENCY_MAX = 90
 AT_RISK_RECENCY_MAX = 180
 
-# 低评分阈值（Brief 8.4）
+# 低评分阈值
 LOW_SCORE_THRESHOLD = 2
 
 
@@ -55,7 +55,7 @@ def classify_lifecycle(recency_days: int, order_count: int) -> str:
 
 
 def assign_value_segment(total_payment: float, p20: float, p80: float) -> str:
-    """价值标签（Brief 10.2）：>= p80 高价值，>= p20 中价值，否则低价值。"""
+    """价值标签：>= p80 高价值，>= p20 中价值，否则低价值。"""
     if total_payment >= p80:
         return "high_value"
     if total_payment >= p20:
@@ -90,7 +90,7 @@ def is_delayed(delivered_date: Any, estimated_date: Any) -> bool | None:
 
 
 def classify_delay_bucket(delayed: bool | None, delay_days: int | None) -> str | None:
-    """延迟分段（阶段 8 口径，含当天超时归入 1-3 天档）。"""
+    """延迟分段；当天超时归入 1-3 天档。"""
     if delayed is None:
         return None
     if not delayed:
@@ -160,7 +160,7 @@ def campaign_rule_hit(
 
 
 def aggregate_order_items(prices: Sequence[float], freights: Sequence[float]) -> dict[str, float]:
-    """订单商品行聚合（阶段 4 口径）：goods/freight/item 三个金额。"""
+    """订单商品行聚合：goods/freight/item 三个金额。"""
     if len(prices) != len(freights):
         raise ValueError("prices 与 freights 长度不一致")
     goods = round(sum(prices), 2)
@@ -173,5 +173,5 @@ def aggregate_order_items(prices: Sequence[float], freights: Sequence[float]) ->
 
 
 def derive_analysis_date(max_valid_purchase_date: Any) -> date:
-    """analysis_date = 最大有效购买日期 + 1 天（Brief 3.1）。"""
+    """analysis_date = 最大有效购买日期 + 1 天。"""
     return to_date(max_valid_purchase_date) + timedelta(days=1)

@@ -5,7 +5,7 @@
 --   - 字符集 utf8mb4 / InnoDB
 --   - 金额 DECIMAL(10,2)，时间 DATETIME，计数 INT，评分 TINYINT
 --   - 外键关系为逻辑外键（见 docs/er_diagram.md），不建物理 FK 约束：
---     原始数据存在孤立记录，关联完整性改由 sql/03_data_quality_checks.sql 检查
+--     关联完整性由 sql/03_data_quality_checks.sql 量化检查
 -- 可重复执行：DROP TABLE IF EXISTS + CREATE TABLE
 -- =============================================================
 
@@ -79,7 +79,7 @@ CREATE TABLE order_payments (
   COMMENT = '订单支付表：粒度=一条支付记录';
 
 -- -------------------------------------------------------------
--- 5. order_reviews：订单评价（评价行多于订单行，存在同单多评价）
+-- 5. order_reviews：订单评价（一单可有多条评价记录）
 -- -------------------------------------------------------------
 DROP TABLE IF EXISTS order_reviews;
 CREATE TABLE order_reviews (

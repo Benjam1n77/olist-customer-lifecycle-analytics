@@ -234,7 +234,7 @@ experience_segment 主标签优先级：service_recovery_needed > low_satisfacti
 
 ```text
 outputs/tables/cohort_retention_long.csv      # 长表（255 行）
-outputs/tables/cohort_retention_matrix.csv    # 矩阵（22 Cohort × M0-M21）
+outputs/tables/cohort_retention_matrix.csv    # 矩阵（22 Cohort × M0-M22）
 outputs/figures/06_cohort_retention_heatmap.png  # 热力图（不可观察格子留空）
 ```
 

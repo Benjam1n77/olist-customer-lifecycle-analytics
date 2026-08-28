@@ -2,11 +2,11 @@
 -- 10_cohort_retention.sql
 -- 目的：按首购月份划分 Cohort，计算月度留存明细表 cohort_retention_long
 -- 粒度：一行一个 (cohort_month, month_index) 组合
--- 依赖：mart_order_summary（阶段 4）
+-- 依赖：mart_order_summary
 -- 口径（详见 docs/metric_definitions.md）：
 --   - Cohort 划分：客户首笔 delivered 订单的购买月份（与 mart_customer_features.first_purchase_date 一致）
 --   - 活跃定义：该月有至少一笔 delivered 订单
---   - 观察窗口截断（Brief 11.2 要求）：
+--   - 观察窗口截断：
 --     analysis_date = 2018-08-30，2018-08 为不完整月份，
 --     观察窗口终点取最后一个完整月份 2018-07。
 --     * 可观察的 (cohort, month_index) 格子全量生成：实际留存为 0 也记 0（真实发生的流失）；

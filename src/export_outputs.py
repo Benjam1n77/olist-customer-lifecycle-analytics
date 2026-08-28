@@ -1,15 +1,10 @@
 """分析结果导出模块。
 
-阶段 9 职责：
-1. 导出营销人群名单 mart_campaign_target_list 为 CSV；
-2. 生成模拟触达任务表（明确标注 SIMULATED，仅演示排期，
-   本项目未实现真实触达系统——Brief 第 12 节约束）。
-
-后续阶段 10 将在本模块继续扩展图表与 Tableau 数据导出。
-阶段 10 职责：
-3. 导出高价值流失客户名单（Brief 11.3）；
-4. 导出 Tableau 汇总数据：中间表进入本地目录，最终展示表进入 outputs/tableau/；
-5. 客户级名单与模拟任务统一进入 outputs/local/，不提交到 GitHub。
+职责：
+1. 导出营销人群名单和高价值流失客户名单；
+2. 生成明确标注为 SIMULATED 的演示排期，不代表真实触达；
+3. 导出 Tableau 汇总数据：中间表进入本地目录，最终展示表进入 outputs/tableau/；
+4. 客户级名单与模拟任务统一写入 outputs/local/。
 
 使用方式：
     python -m src.export_outputs --campaign
@@ -183,7 +178,7 @@ def export_simulated_tasks(config: dict) -> Path:
 
 
 def export_high_value_churned(config: dict) -> Path:
-    """导出高价值流失客户名单（Brief 11.3）并输出汇总指标。"""
+    """导出高价值流失客户名单并输出汇总指标。"""
     engine = _get_engine(config)
     try:
         with engine.connect() as conn:

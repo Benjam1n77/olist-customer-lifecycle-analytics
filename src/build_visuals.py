@@ -1,7 +1,7 @@
-"""Python 图表生成模块（Brief 第 15 节要求的 12 张图）。
+"""Python 核心分析图表生成模块（图 01–12）。
 
 口径约束：
-- 所有数值直接来自 MySQL 各阶段产出表，与 SQL 口径一致，不使用虚构数据；
+- 所有数值读取 MySQL 建模产出表，与 SQL 指标口径一致；
 - 图表文字使用英文（避免 matplotlib 中文字体缺失），说明性文字留在 README；
 - 图片统一保存至 outputs/figures/。
 
@@ -173,7 +173,8 @@ def fig05_segment_distribution(config: dict, out_dir: Path) -> None:
     df["label"] = df["final_segment"].map(name_map)
     fig, ax = plt.subplots(figsize=(10, 5.5))
     ax.barh(df["label"][::-1], df["cnt"][::-1], color="#4c72b0")
-    ax.set_title("Final Customer Segment Distribution (93,358 customers)")
+    customer_count = int(df["cnt"].sum())
+    ax.set_title(f"Final Customer Segment Distribution ({customer_count:,} customers)")
     ax.set_xlabel("Customer Count")
     for i, v in enumerate(df["cnt"][::-1]):
         ax.text(v, i, f" {v:,}", va="center", fontsize=9)
@@ -193,7 +194,8 @@ def fig07_m1_trend(config: dict, out_dir: Path) -> None:
     df = q(
         config,
         "SELECT cohort_month, ROUND(retention_rate * 100, 2) AS m1_retention_pct, cohort_size "
-        "FROM cohort_retention_long WHERE month_index = 1 ORDER BY cohort_month",
+        "FROM cohort_retention_long "
+        "WHERE month_index = 1 AND cohort_size >= 100 ORDER BY cohort_month",
     )
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(
@@ -202,7 +204,7 @@ def fig07_m1_trend(config: dict, out_dir: Path) -> None:
         marker="o",
         color="#4c72b0",
     )
-    ax.set_title("M1 Retention Rate by Cohort (mature cohorts only)")
+    ax.set_title("M1 Retention Rate by Cohort (cohort size >= 100)")
     ax.set_xlabel("Cohort Month (First Purchase)")
     ax.set_ylabel("M1 Retention Rate (%)")
     ax.tick_params(axis="x", rotation=60)

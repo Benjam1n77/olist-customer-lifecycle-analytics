@@ -105,7 +105,7 @@ SELECT
     (SELECT COUNT(*) FROM orders) AS orders_rows,
     (SELECT COUNT(*) FROM mart_order_summary) = (SELECT COUNT(*) FROM orders) AS is_match;
 
--- 验证 3：item_amount 与 payment_amount 差异量化（Brief 3.3 要求，不得假设相等）
+-- 验证 3：item_amount 与 payment_amount 差异量化（不得假设相等）
 SELECT
     '07_validation_amount_diff' AS check_name,
     COUNT(*) AS orders_with_both,

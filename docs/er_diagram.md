@@ -95,7 +95,7 @@ erDiagram
 | customers → orders | 1 : N | `customer_id` 为订单级标识；同一 `customer_unique_id` 可有多笔订单 |
 | orders → order_items | 1 : N | 一笔订单可含多个商品行 |
 | orders → order_payments | 1 : N | 一笔订单可有多条支付记录（组合支付） |
-| orders → order_reviews | 1 : N | 评价行数多于订单数，存在同单多评价 |
+| orders → order_reviews | 1 : N | 一笔订单可能对应多条评价；原始文件另有重复 `review_id`，导入时按既定规则处理 |
 | products → order_items | 1 : N | 同一商品可出现在多个订单 |
 | sellers → order_items | 1 : N | 同一卖家可履约多个订单 |
 | translation → products | 1 : N | 类别葡萄牙语 → 英文名 |

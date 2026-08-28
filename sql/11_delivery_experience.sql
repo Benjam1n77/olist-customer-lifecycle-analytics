@@ -1,13 +1,12 @@
 -- =============================================================
 -- 11_delivery_experience.sql
 -- 目的：履约体验（配送延迟 × 客户评分）分析
--- 依赖：mart_order_summary（阶段 4）、dim_customer_segment（阶段 6）
+-- 依赖：mart_order_summary、dim_customer_segment
 -- 分析样本口径（重要）：
 --   仅取 delivered 订单中 is_delayed 可判定（签收与预计时间齐全）
---   且有评价（review_score 非空）的订单——
---   对应 Brief"配送分析只针对具有实际签收时间和预计签收时间的订单"。
+--   且有评价（review_score 非空）的订单。
 -- 输出：
---   1) mart_delivery_sample：订单级分析样本（供聚合与阶段 10 图表）
+--   1) mart_delivery_sample：订单级分析样本（供聚合与图表）
 --   2) 核心对比指标（准时 vs 延迟评分、评分下降比例）
 --   3) 延迟分段 / 州 / 类别 / 高价值客户 聚合统计
 --   4) 延迟 × 低评分列联表（供 Python 卡方检验）

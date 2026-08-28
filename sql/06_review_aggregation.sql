@@ -3,8 +3,8 @@
 -- 目的：将 order_reviews 聚合到 order_id 粒度，建立 order_review_agg
 -- 粒度：一行一笔订单
 -- 聚合规则（同单多评价，共 243 个订单）：
---   - review_score          = 取最高分（MAX）；理由：评价多为跟进补充，
---                             最高分代表客户最终满意状态；规则已在此处与指标文档记录
+--   - review_score          = 取最高分（MAX）；这是明确的聚合规则，
+--                             不据此推断评价的先后顺序
 --   - has_review_comment    = 任一条评价含标题或正文则为 1
 --   - review_response_days  = 取 review_answer_timestamp 最新的一条
 --                             （DATEDIFF(提交时间 − 问卷创建时间)），代表最终响应时长

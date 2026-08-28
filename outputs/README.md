@@ -9,7 +9,7 @@
 | `tables/` | Cohort、90 天二购、履约体验和 SQL × Python 校验汇总，以及二购分析工作簿 |
 | `figures/` | 客户分层、留存和履约体验等分析图表 |
 | `tableau/` | Dashboard 汇总数据、打包工作簿（TWBX）和三页 Tableau 原生截图 |
-| `local/` | 运行流程后生成的完整客户名单、模拟任务、中间表和诊断文件；不纳入版本控制 |
+| `local/` | 运行流程后生成的完整客户名单、模拟任务、中间表和诊断文件 |
 
 Tableau 工作簿与截图采用**加权 M1 留存率 0.48%**（390 / 81,265；21 个成熟 Cohort）。趋势图仅展示 `cohort_size ≥ 100`，该筛选不影响 KPI。完整口径见[指标定义](../docs/metric_definitions.md)。
 

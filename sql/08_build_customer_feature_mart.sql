@@ -2,7 +2,7 @@
 -- 08_build_customer_feature_mart.sql
 -- 目的：构建用户粒度特征宽表 mart_customer_features
 -- 粒度：一行一个 customer_unique_id（真实客户）
--- 依赖：mart_order_summary（阶段 4）
+-- 依赖：mart_order_summary
 -- 口径（详见 docs/metric_definitions.md）：
 --   - 仅纳入至少有一笔 delivered 订单的客户（93,358 人）；
 --     2,738 个仅有无效订单（canceled 等）的客户不进入核心分析

@@ -6,7 +6,7 @@
 ## 执行说明
 
 ```bash
-mysql -u root -pyour_mysql_password olist_ecommerce < sql/03_data_quality_checks.sql
+mysql -u your_mysql_user -p olist_ecommerce < sql/03_data_quality_checks.sql
 ```
 
 ---
@@ -19,7 +19,7 @@ mysql -u root -pyour_mysql_password olist_ecommerce < sql/03_data_quality_checks
 | orders | 99,441 | 99,441 | ✓ 完全一致 |
 | order_items | 112,650 | 112,650 | ✓ 完全一致 |
 | order_payments | 103,886 | 103,886 | ✓ 完全一致 |
-| order_reviews | 98,410 | 99,224（实际记录数） | CSV 物理行数 104,719 被评价文本内嵌换行符抬高；实际 789 个 review_id 各出现 2 次（814 条多余行），INSERT IGNORE 跳过 |
+| order_reviews | 98,410 | 99,224（实际记录数） | CSV 物理行数 104,719 被评价文本内嵌换行符抬高；789 个重复 review_id 中，764 个出现 2 次、25 个出现 3 次，共 814 条多余记录，INSERT IGNORE 跳过 |
 | products | 32,951 | 32,951 | ✓ 完全一致 |
 | sellers | 3,095 | 3,095 | ✓ 完全一致 |
 | geolocation | 1,000,163 | 1,000,163 | ✓ 完全一致 |
@@ -36,9 +36,9 @@ mysql -u root -pyour_mysql_password olist_ecommerce < sql/03_data_quality_checks
 | A3 | sellers.seller_id 唯一性 | 3,095 | 3,095 | 0 | 无需处理 | 否 |
 | A4 | customers.customer_id 唯一性 | 99,441 | 99,441 | 0 | 无需处理 | 否 |
 | A5 | customer_unique_id ↔ customer_id 多对一（复购客户）| 99,441 | 96,096 | 2,997 个真实客户有复购记录（产生 3,345 个多余 customer_id） | 正常现象，复购识别核心依据 | 否 |
-| A6 | reviews.review_id 唯一性（导入后） | 98,410 | 98,410 | 0 | CSV 中 789 个 review_id 各出现 2 次（同一条评价挂到两个订单），导入时 INSERT IGNORE 保留首条 | 否 |
+| A6 | reviews.review_id 唯一性（导入后） | 98,410 | 98,410 | 0 | CSV 中 789 个 review_id 重复（764 个出现 2 次、25 个出现 3 次），导入时 INSERT IGNORE 保留首条 | 否 |
 
-**A1-A6 口径说明**：A5 为正常业务现象（同一真实客户多次下单生成多个 customer_id）；真实复购客户 2,997 人（占 96,096 个客户的 3.12%），3,345 为多余 customer_id 数（一人下 3 单贡献 2 个多余 ID），两者不可混淆。A6 发现 789 个 review_id 各关联两个不同订单：经核实每对除 order_id 外所有字段完全一致、100% 属同一真实客户、98.5% 两单购买时间相差≤30天，判定为同一评价问卷被平台关联到多笔订单（非用户重复提交，因为重复提交会产生不同 review_id 与时间戳）；导入时 INSERT IGNORE 保留首条，被丢弃的 814 行已留档至 `data/interim/dropped_duplicate_reviews.csv` 供审计。另注意：CSV 物理行数（104,719）不等于记录数（99,224），因为部分评价文本含内嵌换行符，统计行数时必须用 CSV 解析器而非 wc -l。
+**A1-A6 口径说明**：A5 为正常业务现象（同一真实客户多次下单生成多个 customer_id）；真实复购客户 2,997 人（占 96,096 个客户的 3.12%），3,345 为多余 customer_id 数（一人下 3 单贡献 2 个多余 ID），两者不可混淆。A6 发现 789 个重复 review_id：764 个出现 2 次、25 个出现 3 次，共 814 条多余记录。重复组除 order_id 外字段一致，且关联至同一 customer_unique_id；该模式与同一评价问卷关联多笔订单的解释相容，但不能据此确认平台内部机制。导入时 INSERT IGNORE 保留每个 review_id 的首条记录，被丢弃的 814 行已留档至 `data/interim/dropped_duplicate_reviews.csv` 供审计。另注意：CSV 物理行数（104,719）不等于记录数（99,224），因为部分评价文本含内嵌换行符，统计行数时必须用 CSV 解析器而非 wc -l。
 
 ---
 
@@ -117,9 +117,9 @@ mysql -u root -pyour_mysql_password olist_ecommerce < sql/03_data_quality_checks
 | --- | --- | --- | --- | --- | --- | --- |
 | E1 | order_items.price <= 0 | 112,650 | 0 | 0.00% | 无需处理 | 是 |
 | E2 | order_items.freight_value < 0 | 112,650 | 0 | 0.00% | 无需处理 | 是 |
-| E3 | payments.payment_value <= 0 | 103,886 | 9 | 0.01% | 排除 9 条后统计 | 否 |
+| E3 | payments.payment_value <= 0 | 103,886 | 9 | 0.01% | 保留并记录；当前支付聚合未额外过滤（0 值不改变金额合计） | 否 |
 | E4 | payments.payment_installments < 0 | 103,886 | 0 | 0.00% | 无需处理 | 否 |
-| E5 | products.product_weight_g <= 0 | 32,949 | 4 | 0.01% | 排除 4 件后统计 | 否 |
+| E5 | products.product_weight_g <= 0 | 32,949 | 4 | 0.01% | 保留并记录；商品重量不进入核心分析 | 否 |
 
 ---
 
@@ -134,7 +134,7 @@ mysql -u root -pyour_mysql_password olist_ecommerce < sql/03_data_quality_checks
 | F5 | order_items.product_id → products（商品无维度） | 112,650 | 0 | 0.00% | 无需处理 | 否 |
 | F6 | products.category 无翻译 | 32,951 | 13 | 0.04% | 保留原葡萄牙语类别名 | 否 |
 
-**关联完整性结论**：全部 9 张表关联完整性为 100%，无孤立记录。
+**关联完整性结论**：F1–F5 的核心订单、客户、商品及评价关联均无孤立记录；F6 另有 13 个商品类别没有英文翻译，按规则保留原葡萄牙语类别名。
 
 ---
 
@@ -155,19 +155,18 @@ mysql -u root -pyour_mysql_password olist_ecommerce < sql/03_data_quality_checks
 
 ### ✓ 通过项
 - 全部主键唯一性（orders、products、sellers、customers、reviews 均无重复）
-- 关联完整性 100%（无孤立记录）
-- 全部金额字段无负值/零值异常（除 9 条支付金额异常，已排除）
-- 时间逻辑整体正常（99.98% 的 delivered 订单履约链路无误）
+- F1–F5 核心关联无孤立记录；F6 有 13 个商品类别缺少英文翻译
+- 商品价格与运费没有非正/负值异常；9 条非正支付记录保留并记录
+- D1、D4、D5 未发现时间倒挂；D2 有 1,350 条（1.40%）、D3 有 23 条（0.02%）异常并分别记录
 
 ### ⚠ 需关注项
 - **D2 时间链路异常**：1,350 条 delivered 订单审批时间晚于交付承运商（1.40%），但不影响 delivery_days/delay_days（这两个指标不用审批/承运商时间），仅在文档记录
-- **review_id 重复**：789 个评价问卷各被关联到同一客户的两笔订单，INSERT IGNORE 保留首条，丢弃行已留档审计；另有 243 个订单存在同单 2 条评价（取最高分处理）
+- **review_id 重复**：789 个重复 ID 中，764 个出现 2 次、25 个出现 3 次；INSERT IGNORE 保留首条，814 条多余记录已留档审计；另有 243 个订单存在同单 2 条评价（取最高分处理）
 - **A5 一次性购买比例高**：96,096 个真实客户中仅 2,997 人有复购（3.12% 复购率），需在 RFM 分析中特别处理
 
 ### 数据质量结论
 
-> 整体数据质量良好，9 张表关联完整性为 100%，核心分析所需的 delivered 订单有 96,478 笔，
-> 导入后的主键唯一性与关联完整性检查通过，质量检查记录为订单宽表构建提供依据。
+> 整体数据质量良好，核心订单、客户、商品和评价关联无孤立记录；13 个商品类别缺少英文翻译并按规则保留原类别名。核心分析所需的 delivered 订单有 96,478 笔，导入后的主键唯一性检查通过，质量检查记录为订单宽表构建提供依据。
 
 ---
 
@@ -180,5 +179,5 @@ mysql -u root -pyour_mysql_password olist_ecommerce < sql/03_data_quality_checks
 | 复购分析基于 customer_unique_id | customer_id 是订单级标识，同一客户多单会生成多个 ID | 全部用户分层指标 |
 | D2/D3 时间链路异常不排除 | delivery_days/delay_days 不使用审批/承运商时间，1,350+23 条异常订单签收与预计时间完整，不影响核心延迟指标；仅在文档记录，供后续处理时效分析时参考 | 无（若扩展时效分析需重新评估） |
 | 同单多评价取最高分 | 243 个订单存在重复评价，需明确聚合口径 | 履约体验标签 |
-| review_id 重复行使用 INSERT IGNORE 跳过 | 789 个 review_id 各挂两个订单（同一评价问卷），PK 约束阻止重复导入；丢弃行留档 data/interim/dropped_duplicate_reviews.csv | 评价分析样本量 |
+| review_id 重复行使用 INSERT IGNORE 跳过 | 789 个重复 review_id（764 个出现 2 次、25 个出现 3 次），PK 约束阻止重复导入；814 条多余记录留档 data/interim/dropped_duplicate_reviews.csv | 评价分析样本量 |
 | CSV 行数统计必须用 CSV 解析器 | 评价文本含内嵌换行符，wc -l 会把记录数抬高 5,495（物理行数 ≠ 记录数） | 所有导入行数校验 |
