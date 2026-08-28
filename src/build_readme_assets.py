@@ -1,4 +1,4 @@
-"""生成 GitHub README 使用的真实项目视觉素材。
+"""生成 README 使用的架构、流程和客户分层预览。
 
 流程图来自项目实际建模步骤；用户分层图来自已验证的 Tableau 导出数据。
 本模块不会生成或模拟 Tableau Dashboard 截图。
@@ -46,6 +46,7 @@ def _add_box(
     title: str,
     body: str,
     color: str,
+    title_size: float = 15,
 ) -> None:
     patch = FancyBboxPatch(
         (x, y),
@@ -63,7 +64,7 @@ def _add_box(
         title,
         ha="center",
         va="center",
-        fontsize=15,
+        fontsize=title_size,
         fontweight="bold",
         color=color,
     )
@@ -186,7 +187,7 @@ def build_pipeline_preview() -> Path:
     axis.text(
         0.5,
         0.86,
-        "From raw business tables to audience activation and Tableau",
+        "From raw business tables to lifecycle insights, campaign proposals and Tableau",
         ha="center",
         va="center",
         fontsize=12,
@@ -194,28 +195,29 @@ def build_pipeline_preview() -> Path:
     )
 
     steps = [
-        (0.05, 0.58, "01", "Raw business\ntables", COLORS["blue"]),
-        (0.29, 0.58, "02", "Data quality\nchecks", COLORS["blue"]),
-        (0.53, 0.58, "03", "Order-level\nmart", COLORS["teal"]),
-        (0.77, 0.58, "04", "Customer-level\nmart", COLORS["teal"]),
-        (0.77, 0.25, "05", "RFM customer\ntagging", COLORS["orange"]),
-        (0.53, 0.25, "06", "Lifecycle\nanalysis", COLORS["orange"]),
-        (0.29, 0.25, "07", "Campaign\ntargeting", COLORS["red"]),
-        (0.05, 0.25, "08", "Tableau\nDashboard", COLORS["red"]),
+        (0.025, 0.58, "01", "Raw business\ntables", COLORS["blue"]),
+        (0.225, 0.58, "02", "Data quality\nchecks", COLORS["blue"]),
+        (0.425, 0.58, "03", "Order-level\nmart", COLORS["teal"]),
+        (0.625, 0.58, "04", "Customer-level\nmart", COLORS["teal"]),
+        (0.825, 0.58, "05", "RFM customer\ntagging", COLORS["orange"]),
+        (0.825, 0.25, "06", "Lifecycle\nanalysis", COLORS["orange"]),
+        (0.625, 0.25, "07", "90-day repeat\npurchase", COLORS["orange"]),
+        (0.425, 0.25, "08", "Campaign\ntargeting", COLORS["red"]),
+        (0.225, 0.25, "09", "Tableau\nDashboard", COLORS["red"]),
     ]
     for x, y, number, title, color in steps:
-        _add_box(axis, x, y, 0.18, 0.2, f"{number}  {title}", "", color)
+        _add_box(axis, x, y, 0.15, 0.2, f"{number}  {title}", "", color, title_size=13)
 
-    for start_x, end_x in [(0.23, 0.29), (0.47, 0.53), (0.71, 0.77)]:
+    for start_x, end_x in [(0.175, 0.225), (0.375, 0.425), (0.575, 0.625), (0.775, 0.825)]:
         _add_arrow(axis, (start_x, 0.68), (end_x, 0.68))
-    _add_arrow(axis, (0.86, 0.58), (0.86, 0.45))
-    for start_x, end_x in [(0.77, 0.71), (0.53, 0.47), (0.29, 0.23)]:
+    _add_arrow(axis, (0.9, 0.58), (0.9, 0.45))
+    for start_x, end_x in [(0.825, 0.775), (0.625, 0.575), (0.425, 0.375)]:
         _add_arrow(axis, (start_x, 0.35), (end_x, 0.35))
 
     axis.text(
         0.5,
         0.12,
-        "Each analytical output is derived from project tables or generated charts — no synthetic results",
+        "Pre-aggregated order data supports customer analysis, rule-based campaigns and BI reporting",
         ha="center",
         va="center",
         fontsize=12,
