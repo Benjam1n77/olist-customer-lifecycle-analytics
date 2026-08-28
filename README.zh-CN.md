@@ -121,7 +121,7 @@ SQL 负责原始表聚合、宽表建模、用户分层、Cohort 与营销名单
 
 ## 8. 核心发现
 
-以下数字均原样取自 [`docs/resume_metrics.md`](docs/resume_metrics.md)，未进行外推：
+以下数字均原样取自 [`docs/verified_metrics.md`](docs/verified_metrics.md)，未进行外推：
 
 | 分析主题 | 核心发现 | 业务含义 |
 | --- | --- | --- |
@@ -185,7 +185,7 @@ pip install -r requirements.txt
 
 ### 数据准备
 
-将 Olist 原始 CSV 放入 `data/raw/`，并按 [`data/README.md`](data/README.md) 配置文件名。数据库连接使用 `config/config.yaml` 或环境变量，真实凭据不应提交到 GitHub。
+将 Olist 原始 CSV 放入 `data/raw/`，并按 [`data/README.md`](data/README.md) 配置文件名。数据库连接信息通过 `config/config.yaml` 或环境变量提供。
 
 ### 运行流程
 
@@ -236,7 +236,7 @@ Notebook 重新核算加权 M1 留存率 0.48%，并检查源文件哈希不变�
 | `docs/` | 指标定义、分析报告、数据字典与建模说明 |
 | `outputs/tables/` | Cohort、二购、履约与校验汇总 |
 | `outputs/figures/`、`outputs/tableau/` | 分析图、Tableau 汇总数据、打包工作簿与原生截图 |
-| `outputs/local/` | 运行流程后生成的完整客户名单、模拟任务、中间表和诊断；不纳入版本控制 |
+| `outputs/local/` | 运行流程后按需生成的完整客户名单、模拟任务、中间表和诊断 |
 | `data/`、`logs/`、`config/` | 数据说明、配置示例，以及本地运行所需的输入、日志和配置 |
 | `tests/`、`.github/` | 自动化测试与 CI |
 
@@ -259,4 +259,4 @@ MIT 不覆盖 Olist 原始数据及其改编结果，包括公开汇总表、真
 
 ---
 
-本项目的指标、图表和名单均来自实际数据处理结果；核心数字索引见 [`docs/resume_metrics.md`](docs/resume_metrics.md)，完整分析报告见 [`docs/project_report.md`](docs/project_report.md)。
+本项目的指标、图表和名单均来自实际数据处理结果；核心数字索引见 [`docs/verified_metrics.md`](docs/verified_metrics.md)，完整分析报告见 [`docs/project_report.md`](docs/project_report.md)。

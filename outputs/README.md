@@ -43,4 +43,4 @@ python -m src.build_sample_docs --check
 
 客户级文件写入配置项 `output_local_dir`（默认 `outputs/local/`）；Tableau 中间表写入其下的 `tableau_staging/`，看板汇总 CSV 写入 `outputs/tableau/`。导出脚本不改写 TWBX 或截图，工作簿与图片的制作方式见[Tableau 指南](../docs/tableau_build_guide.md)。
 
-展示 Notebook 仅读取仓库中的汇总 CSV，无需 MySQL 或完整客户名单，也不重新拟合模型。
+展示 Notebook 仅读取项目汇总 CSV，无需 MySQL 或完整客户名单，也不重新拟合模型。

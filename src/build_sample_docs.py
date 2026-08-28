@@ -1,7 +1,7 @@
 """从现有运营名单生成少量真实样例说明，不改写数据、不重新计算标签。
 
 运行 python -m src.build_sample_docs；使用 --check 只核对现有文档。
-输出为 Markdown，不额外发布完整客户 CSV。
+输出为 Markdown，不创建或改写完整客户 CSV。
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ def select_records(rows):
     row_count = 0
     for row in rows:
         if set(row) != set(FIELDS) or any(value is None for value in row.values()):
-            raise ValueError("运营名单字段或列数变化，请人工核对样例发布范围")
+            raise ValueError("运营名单字段或列数变化，请人工核对样例字段范围")
         customer_id = row["customer_unique_id"]
         rule = row["reason_code"]
         if not re.fullmatch(r"[0-9a-f]{32}", customer_id):
@@ -87,7 +87,7 @@ def build_document(source: Path) -> str:
     try:
         source_label = source.resolve().relative_to(PROJECT_ROOT).as_posix()
     except ValueError:
-        # 自定义输入路径不应把本机用户名或绝对目录写进公开文档。
+        # 自定义输入路径只在说明中记录文件名。
         source_label = source.name + "（自定义本地生成目录）"
     core = markdown_table(
         ["运营规则", "匿名客户 ID", "订单数（笔）", "历史支付（BRL）", "Recency（天）"],
@@ -151,7 +151,7 @@ python -m src.build_sample_docs
 python -m src.build_sample_docs --check
 ```
 
-生成器只读取现有名单，不连接数据库、不重算客户标签、不写入输入数据。首次克隆无需本地完整名单即可阅读本页；如需重新选取样例，先按项目流程生成运营名单。完整名单更新后应同步重建本页，并在发布前人工审阅。
+生成器只读取现有名单，不连接数据库、不重算客户标签、不写入输入数据。本页可直接使用现有样例阅读；如需重新选取样例，先按项目流程生成运营名单。完整名单更新后应同步重建并核对本页。
 
 ## 数据署名与许可
 

@@ -1,18 +1,16 @@
-# =============================================================
 # Olist 项目配置示例
 # 使用方式：
 #   1. 复制本文件为 config/config.yaml
-#   2. 填入真实数据库账号密码（config.yaml 已被 .gitignore 忽略）
+#   2. 设置本地数据库连接信息
 #   3. 也可通过环境变量覆盖（优先级：环境变量 > config.yaml）
 #      例如：OLIST_DB_HOST / OLIST_DB_PORT / OLIST_DB_USER /
 #            OLIST_DB_PASSWORD / OLIST_DB_NAME
-# =============================================================
 
 database:
   host: localhost
   port: 3306
   user: your_mysql_user
-  password: your_mysql_password   # 切勿提交真实密码到 Git
+  password: your_mysql_password
   database: olist_ecommerce
   charset: utf8mb4
 
@@ -24,7 +22,7 @@ paths:
   output_tables_dir: outputs/tables
   output_figures_dir: outputs/figures
   output_tableau_dir: outputs/tableau
-  # 完整派生名单和本地中间产物；为精简仓库，整个目录不纳入 Git
+  # 客户级导出与中间产物
   output_local_dir: outputs/local
 
 analysis:

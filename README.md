@@ -37,7 +37,7 @@ Modeling details: [data dictionary](docs/data_dictionary.md), [entity relationsh
 
 ## Key findings
 
-Reported metrics are traceable to the [verified metric index](docs/resume_metrics.md) and [SQL/Python reconciliation results](outputs/tables/cross_validation_results.csv).
+Reported metrics are traceable to the [verified metric index](docs/verified_metrics.md) and [SQL/Python reconciliation results](outputs/tables/cross_validation_results.csv).
 
 | Finding | Observed result | Scope |
 | --- | --- | --- |
@@ -117,14 +117,14 @@ jupyter nbconvert --to notebook --execute notebooks/01_project_showcase.ipynb \
   --output-dir outputs/local/notebook_runs --ExecutePreprocessor.timeout=180
 ```
 
-The notebook recomputes weighted M1 retention, checks aggregate consistency and verifies that its source files were not modified. The source-verification test for the complete customer list is intentionally skipped in a public clone, where that local-only file is absent.
+The notebook recomputes weighted M1 retention, checks aggregate consistency and verifies that its source files were not modified. An optional provenance check also runs when the complete customer export is available.
 
 <details>
 <summary>Rebuild the full SQL/Python pipeline (MySQL required)</summary>
 
 Use a dedicated local MySQL 8 database and install the `mysql` command-line client. Download the source CSVs into `data/raw/` using the [data setup guide (Chinese)](data/README.md).
 
-Create a local configuration from [the example](config/config.example.yaml) if one does not already exist, then set your own database credentials. Do not overwrite an existing configuration or commit real credentials.
+Create a local configuration from [the example](config/config.example.yaml) if one does not already exist, then set the database connection values for your environment.
 
 ```bash
 cp -n config/config.example.yaml config/config.yaml
@@ -166,9 +166,9 @@ The final validation stage requires the preceding analytical tables. Pipeline im
 | `outputs/tables/` | Published analytical summaries and reconciliation results |
 | `outputs/figures/`, `outputs/tableau/` | Analysis figures, final Tableau workbook, aggregate inputs and screenshots |
 | `tests/`, `.github/` | Automated checks and CI |
-| `outputs/local/` | Full customer exports, intermediate tables and diagnostics generated when running the pipeline; not version-controlled |
+| `outputs/local/` | Full customer exports, intermediate tables and diagnostics generated locally as needed |
 
-Download the raw dataset separately to rebuild the pipeline. The repository includes aggregate results; complete customer exports and intermediate outputs are generated locally. Database credentials belong in local configuration or environment variables.
+Download the raw dataset separately to rebuild the pipeline. The repository includes aggregate results; complete customer exports and intermediate outputs are generated locally. Database connection values can be supplied through local configuration or environment variables.
 
 [Six real anonymized customer examples (Chinese)](docs/customer_samples.md) include field definitions and a deterministic selection method; they are not a random sample or evidence of actual marketing contact. See the [output guide (Chinese)](outputs/README.md).
 

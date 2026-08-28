@@ -1,17 +1,14 @@
-# ---- 数据文件（原始数据不得提交） ----
-data/raw/*
-data/interim/*
-data/processed/*
-!data/raw/.gitkeep
-!data/interim/.gitkeep
-!data/processed/.gitkeep
+# ---- Data files ----
+/data/raw/
+/data/interim/
+/data/processed/
 *.csv
 *.zip
 *.parquet
 *.sqlite
 *.db
 
-# ---- 敏感配置 ----
+# ---- Local configuration ----
 .env
 .env.*
 config/config.yaml
@@ -21,24 +18,18 @@ config/config.local.yaml
 kaggle.json
 credentials.json
 
-# ---- 完整个人简历（含联系方式，仅保留在本地） ----
-/docs/resume/resume_full.tex
-
-# ---- 本地生成的报告副本（以 Markdown 源文件为发布版本） ----
+# ---- Local document builds ----
 docs/project_report.html
 docs/project_report.pdf
 
-# ---- 本地生成产物与旧工具（任何文件类型均不发布） ----
+# ---- Generated local artifacts ----
 /outputs/local/
 /tools/legacy/
 
-# ---- 分析输出（按需提交，默认忽略大体积产物） ----
+# ---- Published analysis outputs (explicit allowlist) ----
 outputs/tables/*
 outputs/figures/*
 outputs/tableau/*
-!outputs/tables/.gitkeep
-!outputs/figures/.gitkeep
-!outputs/tableau/.gitkeep
 !outputs/tables/cohort_retention_long.csv
 !outputs/tables/cohort_retention_matrix.csv
 !outputs/tables/cross_validation_results.csv
@@ -72,7 +63,7 @@ outputs/tableau/*
 !outputs/tableau/delivery_analysis.png
 !outputs/tableau/Olist_Customer_Lifecycle_Dashboard.twbx
 
-# ---- Tableau 本地工作文件与旧设计预览 ----
+# ---- Tableau working files ----
 *.twbr
 outputs/tableau/*.twb
 outputs/tableau/*_tableau_tmp.png
@@ -94,9 +85,8 @@ venv/
 .coverage
 htmlcov/
 
-# ---- 日志 ----
-logs/*
-!logs/.gitkeep
+# ---- Logs ----
+/logs/
 
 # ---- Jupyter / IDE / 系统 ----
 .DS_Store

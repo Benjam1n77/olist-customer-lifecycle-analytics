@@ -1,4 +1,4 @@
-"""公开展示文件与本地目录的发布边界检查。"""
+"""分析产物与本地生成目录的路径检查。"""
 
 import ast
 import json
@@ -32,20 +32,19 @@ def test_local_and_legacy_files_are_ignored_regardless_of_extension():
         "outputs/local/sample.json",
         "tools/legacy/build_tableau_previews.py",
         "tools/legacy/README.md",
-        "docs/resume/resume_full.tex",
+        "outputs/local/career_materials/profile.tex",
     ]
     assert check_ignored(local_paths) == set(local_paths)
-    public_paths = [
+    published_paths = [
         "notebooks/01_project_showcase.ipynb", "outputs/README.md",
         "docs/customer_samples.md", "src/build_sample_docs.py",
-        "docs/resume/resume_project_description.md",
-        "docs/resume/resume_metrics.md",
+        "docs/verified_metrics.md",
         "outputs/tableau/Olist_Customer_Lifecycle_Dashboard.twbx",
         "outputs/tableau/dashboard_overview.png",
         "outputs/tableau/customer_segment.png",
         "outputs/tableau/delivery_analysis.png",
     ]
-    assert not check_ignored(public_paths)
+    assert not check_ignored(published_paths)
 
 
 def test_showcase_is_executed_and_uses_only_public_aggregate_inputs():

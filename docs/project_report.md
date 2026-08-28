@@ -1,7 +1,7 @@
 # Olist 电商客户生命周期与精细化运营分析 — 分析与实施报告
 
 > 本报告说明数据模型、分析方法、实测结果、质量验证与运营应用。
-> 11 项核心宽表指标通过 SQL × Python 交叉验证；专题结果来自数据库查询与分析脚本，来源见 [指标索引](resume_metrics.md)。
+> 11 项核心宽表指标通过 SQL × Python 交叉验证；专题结果来自数据库查询与分析脚本，来源见 [指标索引](verified_metrics.md)。
 > 观察日 analysis_date = 2018-08-30（最大有效购买日期 + 1 天，由数据推导）。
 
 ---
@@ -45,7 +45,7 @@
 ### 实现方式
 
 1. 目录按配置、数据、文档、SQL、Python、Notebook、输出和测试组织；
-2. `.gitignore` 区分仓库内汇总结果与本地输入、配置、完整名单和日志；
+2. 配置层区分分析汇总与本地输入、配置、完整名单和日志；
 3. `requirements.txt` 定义运行依赖；
 4. `config/config.example.yaml` 提供配置模板，`src/config.py` 负责加载：
    - YAML 配置与环境变量合并（环境变量优先）；
@@ -56,7 +56,7 @@
 
 ### 配置与运行环境
 
-- 数据库连接信息保存在本地配置或环境变量中，仓库提供不含真实凭据的配置模板；
+- 数据库连接信息通过本地配置或环境变量提供，配置模板使用占位值；
 - 分析运行环境为 Python 3.13、MySQL 8.0.44；GitHub Actions 使用 Python 3.11 运行测试与展示 Notebook。
 
 ---
@@ -285,7 +285,7 @@ delivered 且签收/预计时间齐全且有评价的订单：95,364 笔（与�
 
 1. **13 张 Python 图表**覆盖客户分层、留存、履约与首购后 90 天二购，数值来自查询结果，标明标题、坐标轴与单位；
 2. **高价值流失分析**：完整人群为 10,915 人（互斥 final_segment 中的 10,326 人 + 589 名优先归入履约受损人群的客户），历史支付占比 30.89%；
-3. **6 个最终 Tableau CSV** 按三页看板结构导出（customer_overview / customer_segment_dashboard / cohort_dashboard / delivery_dashboard / category_performance / campaign_dashboard）；转换前的中间 CSV 保存在 `outputs/local/tableau_staging/`，不发布。
+3. **6 个最终 Tableau CSV** 按三页看板结构导出（customer_overview / customer_segment_dashboard / cohort_dashboard / delivery_dashboard / category_performance / campaign_dashboard）；转换前的中间 CSV 保存在 `outputs/local/tableau_staging/`。
 4. **输出组织**：打包工作簿和三张 Tableau 原生截图位于 `outputs/tableau/`；完整客户名单与模拟任务写入 `outputs/local/`，生成方式见 [输出说明](../outputs/README.md)。
 5. **真实交付样例**：[6 条真实记录与字段字典](customer_samples.md) 按每类运营规则的匿名客户 ID 字典序选一条，保留原字段值并记录源文件哈希；不是随机样本，也不是实际触达记录。
 
@@ -294,12 +294,12 @@ delivered 且签收/预计时间齐全且有评价的订单：95,364 笔（与�
 ## 十二、测试、验证与交付
 
 1. **SQL 验证**（`sql/13_validation_queries.sql`）：10 项一致性验证全部通过，并检查 Cohort 明细留存率与客户数勾稽关系；
-2. **pytest 自动化测试**：67 个用例在本地全部通过，覆盖加权 M1 汇总口径、成熟 90 天窗口、同日订单排除、第 1/90 天二购边界与分组率勾稽，以及本地导出路径、Git 忽略规则、Notebook 公开输入边界和真实样例范围/来源校验；
+2. **pytest 自动化测试**：67 个用例在本地全部通过，覆盖加权 M1 汇总口径、成熟 90 天窗口、同日订单排除、第 1/90 天二购边界与分组率勾稽，以及本地导出路径、Notebook 聚合输入范围和真实样例范围/来源校验；
 3. **SQL × Python 交叉验证**：总客户数 96,096、有效订单 96,478、一次性占比 97.00%、复购率 3.00%、总支付 15,422,461.77、AOV 159.86、延迟率 7.98%、准时/延迟均分 4.30/2.57、高价值流失 10,915、加权 M1 留存率 0.48% —— **11 项全部 PASS，差异为 0**；
 4. **A/B 测试设计**（`docs/ab_test_design.md`）：两个实验（高价值流失召回、首购二购激励），含哈希分流方案、主/次/护栏指标、样本量公式与功效分析；所有基线假设明确标注为设计假设，无任何虚构实验结果；
 5. **README 完整版**：含项目流程、用户分层、核心发现、Tableau 预览、90 天二购专题、运行步骤及代码与数据的许可边界；
-6. **指标索引**（`docs/resume_metrics.md`）：汇总核心指标、专题结果与数据来源；
-7. **展示 Notebook**（`notebooks/01_project_showcase.ipynb`）：读取 9 份已生成公开汇总，9 个代码单元实际执行通过，展示 4 张图；核算加权 M1 留存率 0.48%，不依赖数据库、原始数据或客户级名单，不重新拟合模型。
+6. **指标索引**（`docs/verified_metrics.md`）：汇总核心指标、专题结果与数据来源；
+7. **展示 Notebook**（`notebooks/01_project_showcase.ipynb`）：读取 9 份已生成聚合汇总，9 个代码单元实际执行通过，展示 4 张图；核算加权 M1 留存率 0.48%，不依赖数据库、原始数据或客户级名单，不重新拟合模型。
 
 ---
 
@@ -379,4 +379,4 @@ pytest tests/
 
 ---
 
-*报告生成日期：2026 年 8 月。全部数字可复现，出处索引见 `docs/resume_metrics.md`。*
+*报告生成日期：2026 年 8 月。全部数字可复现，出处索引见 `docs/verified_metrics.md`。*

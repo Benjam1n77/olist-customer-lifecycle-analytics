@@ -6,9 +6,7 @@
 3. 允许环境变量覆盖数据库配置（环境变量优先级高于 YAML）；
 4. 提供统一的目录路径解析函数与数据库连接串构建函数。
 
-安全约定：
-- 真实配置 config.yaml 已在 .gitignore 中忽略；
-- 日志中不输出数据库密码。
+运行约定：日志只使用脱敏后的数据库连接描述。
 """
 
 from __future__ import annotations
@@ -35,7 +33,7 @@ _ENV_DB_KEYS: dict[str, str] = {
     "database": "OLIST_DB_NAME",
 }
 
-# 当 config/config.yaml 不存在时使用的兜底默认值（与 config.example.yaml 一致）
+# 当 config/config.yaml 不存在时使用的默认值（与 config.example.yaml 一致）
 _DEFAULT_CONFIG: dict[str, Any] = {
     "database": {
         "host": "localhost",

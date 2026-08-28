@@ -166,7 +166,7 @@ def check_config() -> int:
 
     exit_code = 0
 
-    # 检查关键目录
+    auto_create_keys = {"raw_data_dir", "interim_data_dir", "processed_data_dir"}
     for key in (
         "raw_data_dir",
         "interim_data_dir",
@@ -177,10 +177,9 @@ def check_config() -> int:
         "output_tableau_dir",
         "output_local_dir",
     ):
-        path = get_path(config, key)
+        path = get_path(config, key, ensure_exists=key in auto_create_keys)
         status = "存在" if path.exists() else "缺失"
         logger.info("目录 %-22s %s", key + ":", path)
-        # 本地目录不进入版本库，首次导出时自动创建，不影响新克隆的检查。
         if not path.exists() and key != "output_local_dir":
             exit_code = 1
 

@@ -231,7 +231,7 @@ def build_pipeline_preview() -> Path:
 
 
 def build_customer_segmentation_preview() -> Path:
-    """从真实用户分层 Dashboard CSV 生成 GitHub 预览图。"""
+    """从用户分层 Dashboard CSV 生成 README 预览图。"""
     if not SEGMENT_SOURCE.exists():
         raise FileNotFoundError(f"缺少真实用户分层数据：{SEGMENT_SOURCE}")
 

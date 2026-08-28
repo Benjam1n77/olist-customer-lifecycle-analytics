@@ -75,7 +75,7 @@ def test_published_examples_have_only_six_reviewed_records():
 def test_real_local_source_reproduces_published_examples():
     source = PROJECT_ROOT / "outputs/local/customer_campaign_target_list.csv"
     if not source.is_file():
-        pytest.skip("完整名单不随 GitHub 发布；此来源核对仅在本地数据可用时运行")
+        pytest.skip("完整名单不可用，跳过样例来源核对")
     expected = build_document(source)
     actual = (PROJECT_ROOT / "docs/customer_samples.md").read_text(encoding="utf-8")
     assert expected == actual

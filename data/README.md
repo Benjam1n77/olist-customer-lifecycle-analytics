@@ -44,11 +44,11 @@ unzip data/raw/brazilian-ecommerce.zip -d data/raw/
 
 ## 目录约定
 
-| 目录 | 用途 | 是否提交 Git |
+| 目录 | 用途 | 准备方式 |
 | --- | --- | --- |
-| `data/raw/` | 原始 CSV 文件 | 否（`.gitignore` 已忽略） |
-| `data/interim/` | 导入前清洗/转换的中间文件 | 否 |
-| `data/processed/` | 分析用最终文件 | 否 |
+| `data/raw/` | 原始 CSV 文件 | 从数据源下载 |
+| `data/interim/` | 导入前清洗/转换的中间文件 | 流程按需生成 |
+| `data/processed/` | 分析用最终文件 | 流程按需生成 |
 
 ## 重要数据口径提示
 
